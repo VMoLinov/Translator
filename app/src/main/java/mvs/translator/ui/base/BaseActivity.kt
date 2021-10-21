@@ -1,9 +1,10 @@
-package mvs.translator.view.base
+package mvs.translator.ui.base
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import mvs.translator.model.data.AppState
-import mvs.translator.presenter.Presenter
+import mvs.translator.AppState
+import mvs.translator.Presenter
+import mvs.translator.View
 
 abstract class BaseActivity<T : AppState> : AppCompatActivity(), View {
 

@@ -1,18 +1,18 @@
-package mvs.translator.view.main
+package mvs.translator.interactor.main
 
-import mvs.translator.presenter.Interactor
-import mvs.translator.model.data.AppState
-import mvs.translator.model.data.DataModel
-import mvs.translator.model.repository.Repository
 import io.reactivex.Observable
+import mvs.translator.AppState
+import mvs.translator.DataModel
+import mvs.translator.Interactor
+import mvs.translator.Repository
 
 class MainInteractor(
     private val remoteRepository: Repository<List<DataModel>>,
     private val localRepository: Repository<List<DataModel>>
 ) : Interactor<AppState> {
 
-    override fun getData(word: String, fromRemoteSource: Boolean): Observable<AppState> {
-        return if (fromRemoteSource) {
+    override fun getData(word: String, isRemoteSource: Boolean): Observable<AppState> {
+        return if (isRemoteSource) {
             remoteRepository.getData(word).map { AppState.Success(it) }
         } else {
             localRepository.getData(word).map { AppState.Success(it) }

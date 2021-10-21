@@ -1,38 +1,29 @@
-package mvs.translator.view.main
+package mvs.translator.ui.main
 
 import android.os.Bundle
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import mvs.translator.AppState
+import mvs.translator.Presenter
 import mvs.translator.R
-import mvs.translator.databinding.ActivityMainBinding
-import mvs.translator.model.data.AppState
-import mvs.translator.model.data.DataModel
-import mvs.translator.presenter.Presenter
-import mvs.translator.view.base.BaseActivity
-import mvs.translator.view.base.View
-import mvs.translator.view.main.adapter.MainAdapter
+import mvs.translator.View
+import mvs.translator.databinding.AcMainBinding
+import mvs.translator.ui.base.BaseActivity
 
 class MainActivity : BaseActivity<AppState>() {
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: AcMainBinding
 
     private var adapter: MainAdapter? = null
-    private val onListItemClickListener: MainAdapter.OnListItemClickListener =
-        object : MainAdapter.OnListItemClickListener {
-            override fun onItemClick(data: DataModel) {
-                Toast.makeText(this@MainActivity, data.text, Toast.LENGTH_SHORT).show()
-            }
-        }
 
     override fun createPresenter(): Presenter<AppState, View> {
-        return MainPresenterImpl()
+        return MainPresenter()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = AcMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.searchFab.setOnClickListener {
             val searchDialogFragment = SearchDialogFragment.newInstance()
@@ -44,24 +35,21 @@ class MainActivity : BaseActivity<AppState>() {
             })
             searchDialogFragment.show(supportFragmentManager, BOTTOM_SHEET_FRAGMENT_DIALOG_TAG)
         }
+
+        binding.mainActivityRecyclerview.layoutManager = LinearLayoutManager(applicationContext)
+        adapter = MainAdapter { }
+        binding.mainActivityRecyclerview.adapter = adapter
     }
 
     override fun renderData(appState: AppState) {
         when (appState) {
             is AppState.Success -> {
                 val dataModel = appState.data
-                if (dataModel == null || dataModel.isEmpty()) {
+                if (dataModel.isEmpty()) {
                     showErrorScreen(getString(R.string.empty_server_response_on_success))
                 } else {
                     showViewSuccess()
-                    if (adapter == null) {
-                        binding.mainActivityRecyclerview.layoutManager =
-                            LinearLayoutManager(applicationContext)
-                        binding.mainActivityRecyclerview.adapter =
-                            MainAdapter(onListItemClickListener, dataModel)
-                    } else {
-                        adapter!!.setData(dataModel)
-                    }
+                    adapter!!.submitList(dataModel)
                 }
             }
             is AppState.Loading -> {
@@ -76,7 +64,7 @@ class MainActivity : BaseActivity<AppState>() {
                 }
             }
             is AppState.Error -> {
-                showErrorScreen(appState.error.message)
+                showErrorScreen(appState.t.message)
             }
         }
     }
@@ -108,6 +96,7 @@ class MainActivity : BaseActivity<AppState>() {
     }
 
     companion object {
+
         private const val BOTTOM_SHEET_FRAGMENT_DIALOG_TAG =
             "74a54328-5d62-46bf-ab6b-cbf5fgt0-092395"
     }

@@ -1,4 +1,4 @@
-package mvs.translator.view.main
+package mvs.translator.ui.main
 
 import android.os.Bundle
 import android.text.Editable
@@ -7,14 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import mvs.translator.databinding.SearchDialogFragmentBinding
+import mvs.translator.databinding.FrSearchDialogBinding
 
 class SearchDialogFragment : BottomSheetDialogFragment() {
 
-    private var _binding: SearchDialogFragmentBinding? = null
+    private var _binding: FrSearchDialogBinding? = null
     private val binding get() = _binding!!
     private var onSearchClickListener: OnSearchClickListener? = null
+
     private val textWatcher = object : TextWatcher {
+
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             if (binding.searchEditText.text != null && binding.searchEditText.text.toString()
                     .isNotEmpty()
@@ -28,6 +30,7 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
         }
 
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
         override fun afterTextChanged(s: Editable) {}
     }
 
@@ -46,7 +49,7 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = SearchDialogFragmentBinding.inflate(inflater, container, false)
+        _binding = FrSearchDialogBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -60,7 +63,6 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
     override fun onDestroyView() {
         onSearchClickListener = null
         super.onDestroyView()
-        _binding = null
     }
 
     private fun addOnClearClickListener() {
@@ -71,10 +73,12 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
     }
 
     interface OnSearchClickListener {
+
         fun onClick(searchWord: String)
     }
 
     companion object {
+
         fun newInstance(): SearchDialogFragment {
             return SearchDialogFragment()
         }
