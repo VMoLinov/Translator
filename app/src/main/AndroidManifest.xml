@@ -16,6 +16,7 @@
         tools:ignore="AllowBackup">
         <activity
             android:name="mvs.translator.ui.main.MainActivity"
+            android:exported="true"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>

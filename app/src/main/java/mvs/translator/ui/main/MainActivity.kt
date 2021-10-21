@@ -3,6 +3,7 @@ package mvs.translator.ui.main
 import android.os.Bundle
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import moxy.MvpAppCompatActivity
 import moxy.ktx.moxyPresenter
@@ -31,6 +32,11 @@ class MainActivity : MvpAppCompatActivity(), MainView {
             searchDialogFragment.show(supportFragmentManager, BOTTOM_SHEET_FRAGMENT_DIALOG_TAG)
         }
         binding.mainActivityRecyclerview.layoutManager = LinearLayoutManager(applicationContext)
+        /** В ночной теме не отображается */
+        binding.mainActivityRecyclerview.addItemDecoration(
+            DividerItemDecoration(applicationContext, LinearLayoutManager.VERTICAL)
+        )
+        /** Что здесь происходит с адаптером? */
         adapter = MainAdapter { }
         binding.mainActivityRecyclerview.adapter = adapter
     }
