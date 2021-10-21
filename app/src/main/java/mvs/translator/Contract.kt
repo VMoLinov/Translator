@@ -8,20 +8,6 @@ sealed interface AppState {
     data class Loading(val progress: Int? = null) : AppState
 }
 
-interface View {
-
-    fun renderData(appState: AppState)
-}
-
-interface Presenter<T : AppState, V : View> {
-
-    fun attachView(view: V)
-
-    fun detachView(view: V)
-
-    fun getData(word: String, isOnline: Boolean)
-}
-
 // Слой бизнес-логики
 interface Interactor<T> {
 

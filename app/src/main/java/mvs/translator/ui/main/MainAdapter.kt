@@ -26,11 +26,9 @@ class MainAdapter(
 
         fun bind(data: DataModel) {
             val binder = ItemWordBinding.bind(itemView)
-
             binder.headerTextviewRecyclerItem.text = data.text
             binder.descriptionTextviewRecyclerItem.text =
                 data.meaning?.firstOrNull()?.translation?.translation
-
             binder.root.setOnClickListener { itemClickListener(data) }
         }
     }
@@ -45,6 +43,6 @@ object MainCallback : DiffUtil.ItemCallback<DataModel>() {
     }
 
     override fun areContentsTheSame(oldItem: DataModel, newItem: DataModel): Boolean {
-        return oldItem == newItem
+        return oldItem.meaning == newItem.meaning && oldItem.text == newItem.text
     }
 }

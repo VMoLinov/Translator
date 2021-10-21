@@ -4,22 +4,17 @@ import android.os.Bundle
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.recyclerview.widget.LinearLayoutManager
+import moxy.MvpAppCompatActivity
+import moxy.ktx.moxyPresenter
 import mvs.translator.AppState
-import mvs.translator.Presenter
 import mvs.translator.R
-import mvs.translator.View
 import mvs.translator.databinding.AcMainBinding
-import mvs.translator.ui.base.BaseActivity
 
-class MainActivity : BaseActivity<AppState>() {
+class MainActivity : MvpAppCompatActivity(), MainView {
 
     private lateinit var binding: AcMainBinding
-
     private var adapter: MainAdapter? = null
-
-    override fun createPresenter(): Presenter<AppState, View> {
-        return MainPresenter()
-    }
+    private val presenter by moxyPresenter { MainPresenter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +30,6 @@ class MainActivity : BaseActivity<AppState>() {
             })
             searchDialogFragment.show(supportFragmentManager, BOTTOM_SHEET_FRAGMENT_DIALOG_TAG)
         }
-
         binding.mainActivityRecyclerview.layoutManager = LinearLayoutManager(applicationContext)
         adapter = MainAdapter { }
         binding.mainActivityRecyclerview.adapter = adapter
