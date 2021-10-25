@@ -3,21 +3,28 @@ package mvs.translator.ui.main
 import android.os.Bundle
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import moxy.MvpAppCompatActivity
-import moxy.ktx.moxyPresenter
+import dagger.android.AndroidInjection
 import mvs.translator.AppState
 import mvs.translator.R
 import mvs.translator.databinding.AcMainBinding
+import mvs.translator.ui.base.BaseActivity
+import javax.inject.Inject
 
-class MainActivity : MvpAppCompatActivity(), MainView {
+class MainActivity : BaseActivity<AppState>() {
 
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var binding: AcMainBinding
     private var adapter: MainAdapter? = null
-    private val presenter by moxyPresenter { MainPresenter() }
+    override val viewModel: MainViewModel by lazy {
+        viewModelFactory.create(MainViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         binding = AcMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -26,7 +33,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
             searchDialogFragment.setOnSearchClickListener(object :
                 SearchDialogFragment.OnSearchClickListener {
                 override fun onClick(searchWord: String) {
-                    presenter.getData(searchWord, true)
+                    viewModel.getWordDescriptions(searchWord, true)
                 }
             })
             searchDialogFragment.show(supportFragmentManager, BOTTOM_SHEET_FRAGMENT_DIALOG_TAG)
@@ -73,7 +80,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         showViewError()
         binding.errorTextview.text = error ?: getString(R.string.undefined_error)
         binding.reloadButton.setOnClickListener {
-            presenter.getData("hi", true)
+            viewModel.getWordDescriptions("hi", true)
         }
     }
 

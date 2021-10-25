@@ -5,8 +5,9 @@ import mvs.translator.AppState
 import mvs.translator.DataModel
 import mvs.translator.Interactor
 import mvs.translator.Repository
+import javax.inject.Inject
 
-class MainInteractor(
+class MainInteractor @Inject constructor(
     private val remoteRepository: Repository<List<DataModel>>,
     private val localRepository: Repository<List<DataModel>>
 ) : Interactor<AppState> {
