@@ -2,6 +2,7 @@ package mvs.translator.ui.main
 
 import io.reactivex.observers.DisposableObserver
 import mvs.translator.AppState
+import mvs.translator.DataModel
 import mvs.translator.interactor.main.MainInteractor
 import mvs.translator.ui.base.BaseViewModel
 import javax.inject.Inject
@@ -30,5 +31,19 @@ class MainViewModel @Inject constructor(
         }
 
         override fun onComplete() = Unit
+    }
+
+    fun saveState(data: List<DataModel>) {
+        savedStateHandle.set(KEY, data)
+    }
+
+    fun getState(): AppState? {
+        val state = savedStateHandle.get<List<DataModel>>(KEY)
+        return if (state != null) AppState.Success(state)
+        else null
+    }
+
+    companion object {
+        private const val KEY = "key"
     }
 }

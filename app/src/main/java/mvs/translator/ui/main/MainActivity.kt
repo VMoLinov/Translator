@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.android.AndroidInjection
 import mvs.translator.AppState
+import mvs.translator.DataModel
 import mvs.translator.R
 import mvs.translator.databinding.AcMainBinding
 import mvs.translator.ui.base.BaseActivity
@@ -102,8 +103,20 @@ class MainActivity : BaseActivity<AppState>() {
         binding.errorLinearLayout.visibility = VISIBLE
     }
 
-    companion object {
+    override fun onPause() {
+        super.onPause()
+        viewModel.saveState(adapter?.currentList as List<DataModel>)
+    }
 
+    override fun onResume() {
+        super.onResume()
+        val state = viewModel.getState()
+        if (state != null) {
+            renderData(state)
+        }
+    }
+
+    companion object {
         private const val BOTTOM_SHEET_FRAGMENT_DIALOG_TAG =
             "74a54328-5d62-46bf-ab6b-cbf5fgt0-092395"
     }
