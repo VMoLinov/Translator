@@ -10,7 +10,7 @@ class MainInteractor(
     private val localRepository: Repository<List<DataModel>>
 ) : Interactor<AppState> {
 
-    override fun getData(word: String, isRemoteSource: Boolean): AppState {
+    override suspend fun getData(word: String, isRemoteSource: Boolean): AppState {
         return if (isRemoteSource) {
             val data = remoteRepository.getData(word)
             AppState.Success(data)

@@ -8,14 +8,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import mvs.translator.R
 import mvs.translator.databinding.AcMainBinding
 import mvs.translator.model.data.AppState
-import mvs.translator.model.data.DataModel
 import mvs.translator.ui.base.BaseActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity<AppState, MainInteractor>() {
 
     private lateinit var binding: AcMainBinding
     private var adapter: MainAdapter? = null
-    override var viewModel: MainViewModel by viewModel()
+    override val viewModel: MainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +26,7 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
             searchDialogFragment.setOnSearchClickListener(object :
                 SearchDialogFragment.OnSearchClickListener {
                 override fun onClick(searchWord: String) {
-                    viewModel.getWordDescriptions(searchWord, true)
+                    viewModel.getData(searchWord, true)
                 }
             })
             searchDialogFragment.show(supportFragmentManager, BOTTOM_SHEET_FRAGMENT_DIALOG_TAG)
@@ -44,13 +44,16 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
     override fun renderData(appState: AppState) {
         when (appState) {
             is AppState.Success -> {
-                val dataModel = appState.data
-                if (dataModel.isEmpty()) {
-                    showErrorScreen(getString(R.string.empty_server_response_on_success))
+                val data = appState.data
+                if (data.isNullOrEmpty()) {
+                    showAlertDialog(
+                        getString(R.string.dialog_title_sorry),
+                        getString(R.string.empty_server_response_on_success)
+                    )
                 } else {
-                    showViewSuccess()
-                    adapter!!.submitList(dataModel)
+                    adapter!!.submitList(data)
                 }
+                showViewWorking()
             }
             is AppState.Loading -> {
                 showViewLoading()
@@ -64,48 +67,18 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
                 }
             }
             is AppState.Error -> {
-                showErrorScreen(appState.t.message)
+                showViewWorking()
+                showAlertDialog(getString(R.string.error_stub), appState.error.message)
             }
         }
     }
 
-    private fun showErrorScreen(error: String?) {
-        showViewError()
-        binding.errorTextview.text = error ?: getString(R.string.undefined_error)
-        binding.reloadButton.setOnClickListener {
-            viewModel.getWordDescriptions("hi", true)
-        }
-    }
-
-    private fun showViewSuccess() {
-        binding.successLinearLayout.visibility = VISIBLE
+    private fun showViewWorking() {
         binding.loadingFrameLayout.visibility = GONE
-        binding.errorLinearLayout.visibility = GONE
     }
 
     private fun showViewLoading() {
-        binding.successLinearLayout.visibility = GONE
         binding.loadingFrameLayout.visibility = VISIBLE
-        binding.errorLinearLayout.visibility = GONE
-    }
-
-    private fun showViewError() {
-        binding.successLinearLayout.visibility = GONE
-        binding.loadingFrameLayout.visibility = GONE
-        binding.errorLinearLayout.visibility = VISIBLE
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.saveState(adapter?.currentList as List<DataModel>)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        val state = viewModel.getState()
-        if (state != null) {
-            renderData(state)
-        }
     }
 
     companion object {
