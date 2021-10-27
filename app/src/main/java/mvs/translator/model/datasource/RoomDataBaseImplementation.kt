@@ -1,10 +1,12 @@
 package mvs.translator.model.datasource
 
 import mvs.translator.model.data.DataModel
+import mvs.translator.model.data.db.CacheDataModel
 
-class RoomDataBaseImplementation : DataSource<List<DataModel>> {
+class RoomDataBaseImplementation(private val cache: CacheDataModel) :
+    DataSource<List<DataModel>> {
 
     override suspend fun getData(word: String): List<DataModel> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return cache.fromDataBaseToDataModel(word)
     }
 }

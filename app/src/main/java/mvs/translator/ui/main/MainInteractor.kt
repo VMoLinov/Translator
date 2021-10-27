@@ -13,6 +13,7 @@ class MainInteractor(
     override suspend fun getData(word: String, isRemoteSource: Boolean): AppState {
         return if (isRemoteSource) {
             val data = remoteRepository.getData(word)
+            localRepository.insertData(data)
             AppState.Success(data)
         } else {
             val data = localRepository.getData(word)

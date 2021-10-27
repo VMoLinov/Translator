@@ -1,6 +1,9 @@
-package mvs.translator.di
+package mvs.translator.koin
 
 import mvs.translator.model.data.DataModel
+import mvs.translator.model.data.db.CacheDataModel
+import mvs.translator.model.data.db.DatabaseModel
+import mvs.translator.model.data.db.RoomCache
 import mvs.translator.model.datasource.RetrofitImplementation
 import mvs.translator.model.datasource.RoomDataBaseImplementation
 import mvs.translator.model.repository.Repository
@@ -18,9 +21,10 @@ val application = module {
     }
     single<Repository<List<DataModel>>>(named(NAME_LOCAL)) {
         RepositoryImplementation(
-            RoomDataBaseImplementation()
+            RoomDataBaseImplementation(get(named(NAME_CACHE)))
         )
     }
+    single<CacheDataModel>(named(NAME_CACHE)) { RoomCache(DatabaseModel.getInstance()) }
 }
 
 val mainScreen = module {

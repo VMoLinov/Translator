@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -42,6 +43,12 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.2'
     implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
+
+    // Room
+    implementation 'androidx.room:room-runtime:2.3.0'
+    implementation "androidx.room:room-rxjava3:2.3.0"
+    kapt 'androidx.room:room-compiler:2.3.0'
+    kapt "org.xerial:sqlite-jdbc:3.34.0"
 
     //Koin for Android
     //Current version
