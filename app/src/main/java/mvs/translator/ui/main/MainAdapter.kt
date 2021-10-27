@@ -5,8 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import mvs.translator.DataModel
 import mvs.translator.databinding.ItemWordBinding
+import mvs.translator.model.data.DataModel
 
 class MainAdapter(
     private val itemClickListener: (DataModel) -> Unit

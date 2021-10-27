@@ -1,7 +1,6 @@
-package mvs.translator.data
+package mvs.translator.model.data
 
 import io.reactivex.Observable
-import mvs.translator.DataModel
 import mvs.translator.DataSource
 import mvs.translator.Repository
 

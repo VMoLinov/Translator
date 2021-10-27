@@ -1,8 +1,9 @@
-package mvs.translator.data.remote
+package mvs.translator.model.data.remote
 
 import io.reactivex.Observable
-import mvs.translator.DataModel
 import mvs.translator.DataSource
+import mvs.translator.model.data.DataModel
+import mvs.translator.model.datasource.RetrofitImplementation
 
 class DataSourceRemote(
     private val remoteProvider: RetrofitImplementation = RetrofitImplementation()

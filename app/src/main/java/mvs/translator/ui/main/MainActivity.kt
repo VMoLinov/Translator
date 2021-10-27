@@ -3,29 +3,21 @@ package mvs.translator.ui.main
 import android.os.Bundle
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import dagger.android.AndroidInjection
-import mvs.translator.AppState
-import mvs.translator.DataModel
 import mvs.translator.R
 import mvs.translator.databinding.AcMainBinding
+import mvs.translator.model.data.AppState
+import mvs.translator.model.data.DataModel
 import mvs.translator.ui.base.BaseActivity
-import javax.inject.Inject
 
-class MainActivity : BaseActivity<AppState>() {
+class MainActivity : BaseActivity<AppState, MainInteractor>() {
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var binding: AcMainBinding
     private var adapter: MainAdapter? = null
-    override val viewModel: MainViewModel by lazy {
-        viewModelFactory.create(MainViewModel::class.java)
-    }
+    override var viewModel: MainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         binding = AcMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

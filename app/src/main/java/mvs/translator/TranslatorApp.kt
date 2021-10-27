@@ -1,26 +1,16 @@
 package mvs.translator
 
 import android.app.Application
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
-import mvs.translator.di.DaggerAppComponent
-import javax.inject.Inject
+import mvs.translator.di.application
+import mvs.translator.di.mainScreen
+import org.koin.core.context.startKoin
 
-class TranslatorApp : Application(), HasAndroidInjector {
-
-    @Inject
-    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Any>
-
-    override fun androidInjector(): AndroidInjector<Any> {
-        return dispatchingAndroidInjector
-    }
+class TranslatorApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        DaggerAppComponent.builder()
-            .application(this)
-            .build()
-            .inject(this)
+        startKoin {
+            modules(listOf(application, mainScreen))
+        }
     }
 }
