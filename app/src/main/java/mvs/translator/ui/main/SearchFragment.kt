@@ -74,12 +74,10 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
     }
 
     interface OnSearchClickListener {
-
         fun onClick(searchWord: String)
     }
 
     companion object {
-
         fun newInstance(): SearchDialogFragment {
             return SearchDialogFragment()
         }
