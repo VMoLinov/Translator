@@ -18,7 +18,6 @@ fun parseSearchResults(data: AppState): AppState {
         is AppState.Error -> TODO()
         is AppState.Loading -> TODO()
     }
-
     return AppState.Success(newSearchResults)
 }
 

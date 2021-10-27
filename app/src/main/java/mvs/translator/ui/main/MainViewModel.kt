@@ -1,6 +1,5 @@
 package mvs.translator.ui.main
 
-import androidx.lifecycle.LiveData
 import kotlinx.coroutines.launch
 import mvs.translator.model.data.AppState
 import mvs.translator.viewmodel.BaseViewModel
@@ -8,12 +7,6 @@ import mvs.translator.viewmodel.BaseViewModel
 class MainViewModel(
     private val interactor: MainInteractor,
 ) : BaseViewModel<AppState>() {
-
-    private val liveDataForViewToObserve: LiveData<AppState> = _mutableLiveData
-
-    fun subscribe(): LiveData<AppState> {
-        return liveDataForViewToObserve
-    }
 
     override fun getData(word: String, isOnline: Boolean) {
         _mutableLiveData.value = AppState.Loading(null)

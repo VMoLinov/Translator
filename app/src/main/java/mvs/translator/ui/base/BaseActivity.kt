@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import mvs.translator.R
 import mvs.translator.model.data.AppState
-import mvs.translator.utils.network.isOnline
+import mvs.translator.utils.network.NetworkStatus
 import mvs.translator.utils.ui.AlertDialogFragment
 import mvs.translator.viewmodel.BaseViewModel
 import mvs.translator.viewmodel.Interactor
@@ -12,19 +12,17 @@ import mvs.translator.viewmodel.Interactor
 abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity() {
 
     abstract val viewModel: BaseViewModel<T>
-
-    protected var isNetworkAvailable: Boolean = false
+    lateinit var network: NetworkStatus
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        isNetworkAvailable = isOnline(applicationContext)
+        network = NetworkStatus(applicationContext)
         viewModel._mutableLiveData.observe(this) { renderData(it) }
     }
 
     override fun onResume() {
         super.onResume()
-        isNetworkAvailable = isOnline(applicationContext)
-        if (!isNetworkAvailable && isDialogNull()) {
+        if (!network.isOnline() && isDialogNull()) {
             showNoInternetConnectionDialog()
         }
     }

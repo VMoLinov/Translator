@@ -14,7 +14,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MainActivity : BaseActivity<AppState, MainInteractor>() {
 
     private lateinit var binding: AcMainBinding
-    private var adapter: MainAdapter? = null
+    private val adapter = MainAdapter { }
     override val viewModel: MainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,18 +26,15 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
             searchDialogFragment.setOnSearchClickListener(object :
                 SearchDialogFragment.OnSearchClickListener {
                 override fun onClick(searchWord: String) {
-                    viewModel.getData(searchWord, true)
+                    viewModel.getData(searchWord, network.isOnline())
                 }
             })
             searchDialogFragment.show(supportFragmentManager, BOTTOM_SHEET_FRAGMENT_DIALOG_TAG)
         }
         binding.mainActivityRecyclerview.layoutManager = LinearLayoutManager(applicationContext)
-        /** В ночной теме не отображается */
         binding.mainActivityRecyclerview.addItemDecoration(
             DividerItemDecoration(applicationContext, LinearLayoutManager.VERTICAL)
         )
-        /** Что здесь происходит с адаптером? */
-        adapter = MainAdapter { }
         binding.mainActivityRecyclerview.adapter = adapter
     }
 
@@ -51,7 +48,7 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
                         getString(R.string.empty_server_response_on_success)
                     )
                 } else {
-                    adapter!!.submitList(data)
+                    adapter.submitList(data)
                 }
                 showViewWorking()
             }
