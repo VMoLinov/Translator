@@ -6,7 +6,8 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class RoomDataModel(
-    @PrimaryKey val text: String,
+    @PrimaryKey
+    val text: String,
     val word: String
 )
 
@@ -14,26 +15,28 @@ data class RoomDataModel(
     foreignKeys = [ForeignKey(
         entity = RoomDataModel::class,
         parentColumns = ["text"],
-        childColumns = ["parentText"],
+        childColumns = ["word"],
         onDelete = ForeignKey.CASCADE
     )]
 )
 data class RoomMeaning(
     @PrimaryKey
     val imageUrl: String,
-    val parentText: String
+    val parentText: String,
+    val word: String
 )
 
 @Entity(
     foreignKeys = [ForeignKey(
         entity = RoomDataModel::class,
         parentColumns = ["text"],
-        childColumns = ["parentText"],
+        childColumns = ["word"],
         onDelete = ForeignKey.CASCADE
     )]
 )
 data class RoomTranslation(
     @PrimaryKey
     val translation: String,
-    val parentText: String
+    val parentText: String,
+    val word: String
 )

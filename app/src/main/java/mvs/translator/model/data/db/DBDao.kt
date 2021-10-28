@@ -31,12 +31,12 @@ interface DBDao {
         insertTranslation(roomTranslation)
     }
 
-    @Query("SELECT * FROM RoomTranslation WHERE parentText = :parentText")
-    fun getTranslationByParentText(parentText: String): List<RoomTranslation>
+    @Query("SELECT * FROM RoomTranslation WHERE word = :word")
+    fun getTranslationByWord(word: String): List<RoomTranslation>
 
-    @Query("SELECT * FROM RoomMeaning WHERE parentText = :parentText")
-    fun getMeaningByParentText(parentText: String): List<RoomMeaning>
+    @Query("SELECT * FROM RoomMeaning WHERE word = :word")
+    fun getMeaningByWord(word: String): List<RoomMeaning>
 
-    @Query("SELECT * FROM RoomDataModel WHERE text = :parentText")
-    fun getDataModelByParentText(parentText: String): List<RoomDataModel>
+    @Query("SELECT * FROM RoomDataModel WHERE word = :word")
+    fun getDataModelByWord(word: String): List<RoomDataModel>
 }

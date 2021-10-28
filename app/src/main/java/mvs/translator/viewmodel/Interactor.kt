@@ -1,7 +1,5 @@
 package mvs.translator.viewmodel
 
-import mvs.translator.model.data.DataModel
-
 // Слой бизнес-логики
 interface Interactor<T> {
 

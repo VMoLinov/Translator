@@ -24,7 +24,9 @@ class MainInteractor(
     override suspend fun insertData(data: AppState, word: String) {
         when (data) {
             is AppState.Success -> localRepository.insertData(data.data, word)
-            else -> { TODO() }
+            else -> {
+                TODO()
+            }
         }
     }
 }

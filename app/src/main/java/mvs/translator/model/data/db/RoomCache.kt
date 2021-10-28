@@ -13,26 +13,46 @@ class RoomCache(
         val roomTranslation: MutableList<RoomTranslation> = mutableListOf()
         data.forEach { dataModel ->
             dataModel.meaning?.map {
-                roomMeaning.add(RoomMeaning(it.imageUrl, dataModel.text))
-                roomTranslation.add(RoomTranslation(it.translation!!.translation, dataModel.text))
+                roomMeaning.add(RoomMeaning(it.imageUrl, dataModel.text, word))
+                roomTranslation.add(
+                    RoomTranslation(
+                        it.translation?.translation ?: "",
+                        dataModel.text,
+                        word
+                    )
+                )
             }
         }
         database.dbDao.insertData(roomDataModel, roomMeaning, roomTranslation)
     }
 
+
     override fun fromDataBaseToDataModel(word: String): List<DataModel> {
-        val roomDataModel = database.dbDao.getDataModelByParentText(text)
-        val roomMeaning = database.dbDao.getMeaningByParentText(text)
-        val roomTranslation = database.dbDao.getTranslationByParentText(text)
-        val meaningList: MutableList<Meaning> = mutableListOf()
-        roomTranslation.map { translation ->
-            roomMeaning.map { meaning ->
-                meaningList.add(Meaning(Translation(translation.translation), meaning.imageUrl))
-            }
-        }
+        val roomDataModel = database.dbDao.getDataModelByWord(word)
+        val roomMeaning = database.dbDao.getMeaningByWord(word)
+        val roomTranslation = database.dbDao.getTranslationByWord(word).toMutableList()
         val dataModelList: MutableList<DataModel> = mutableListOf()
-        roomDataModel.map { dataModel ->
-            dataModelList.add(DataModel(dataModel.text, meaningList))
+        val meaningList: MutableList<Meaning> = mutableListOf()
+        roomDataModel.forEach { dataModel ->
+            val text = dataModel.text
+            roomMeaning.forEach mean@{ meaning ->
+                if (meaning.parentText == text) {
+                    roomTranslation.forEach {
+                        if (it.parentText == text) {
+                            meaningList.add(
+                                Meaning(
+                                    Translation(it.translation),
+                                    meaning.imageUrl
+                                )
+                            )
+                            roomTranslation.remove(it)
+                            return@mean
+                        }
+                    }
+                }
+            }
+            dataModelList.add(DataModel(text, meaningList.toList()))
+            meaningList.clear()
         }
         return dataModelList
     }

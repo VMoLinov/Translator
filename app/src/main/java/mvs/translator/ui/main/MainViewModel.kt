@@ -10,14 +10,19 @@ class MainViewModel(
     private val interactor: MainInteractor,
 ) : BaseViewModel<AppState>() {
 
+
     override fun getData(word: String, isOnline: Boolean) {
         _mutableLiveData.value = AppState.Loading(null)
         cancelJob()
         viewModelCoroutineScope.launch {
-            val data = interactor.getData(word, isOnline)
-            _mutableLiveData.value = data
             withContext(Dispatchers.IO) {
-                interactor.insertData(data,word)
+                val data = interactor.getData(word, isOnline)
+                withContext(Dispatchers.Main) {
+                    _mutableLiveData.value = data
+                }
+                if (word.isNotEmpty()) {
+                    interactor.insertData(data, word)
+                }
             }
         }
     }
