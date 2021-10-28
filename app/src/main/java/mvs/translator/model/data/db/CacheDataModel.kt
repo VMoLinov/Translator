@@ -4,7 +4,7 @@ import mvs.translator.model.data.DataModel
 
 interface CacheDataModel {
 
-    fun fromDataModelToRoom(data: List<DataModel>): List<RoomDataModel>
+    fun fromDataModelToRoom(data: List<DataModel>, word: String)
 
-    fun fromDataBaseToDataModel(text: String): List<DataModel>
+    fun fromDataBaseToDataModel(word: String): List<DataModel>
 }

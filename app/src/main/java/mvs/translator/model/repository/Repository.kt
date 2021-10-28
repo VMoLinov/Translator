@@ -6,6 +6,4 @@ import mvs.translator.model.data.DataModel
 interface Repository<T> {
 
     suspend fun getData(word: String): T
-
-    suspend fun insertData(data: List<DataModel>): T
 }

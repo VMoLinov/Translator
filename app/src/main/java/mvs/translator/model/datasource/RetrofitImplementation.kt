@@ -39,4 +39,8 @@ class RetrofitImplementation : DataSource<List<DataModel>> {
     companion object {
         private const val BASE_URL_LOCATIONS = "https://dictionary.skyeng.ru/api/public/v1/"
     }
+
+    override suspend fun insertData(dataModel: List<DataModel>?) {
+        TODO("Not yet implemented")
+    }
 }

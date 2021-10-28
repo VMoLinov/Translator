@@ -9,4 +9,10 @@ class RoomDataBaseImplementation(private val cache: CacheDataModel) :
     override suspend fun getData(word: String): List<DataModel> {
         return cache.fromDataBaseToDataModel(word)
     }
+
+    override suspend fun insertData(dataModel: List<DataModel>?, word: String) {
+        if (dataModel != null) {
+            cache.fromDataModelToRoom(dataModel, word)
+        }
+    }
 }

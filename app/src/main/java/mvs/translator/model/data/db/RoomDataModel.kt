@@ -6,7 +6,8 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class RoomDataModel(
-    @PrimaryKey val text: String?
+    @PrimaryKey val text: String,
+    val word: String
 )
 
 @Entity(
@@ -18,8 +19,9 @@ data class RoomDataModel(
     )]
 )
 data class RoomMeaning(
-    val imageUrl: String?,
-    val parentText: String?
+    @PrimaryKey
+    val imageUrl: String,
+    val parentText: String
 )
 
 @Entity(
@@ -31,6 +33,7 @@ data class RoomMeaning(
     )]
 )
 data class RoomTranslation(
-    val translation: String?,
-    val parentText: String?
+    @PrimaryKey
+    val translation: String,
+    val parentText: String
 )

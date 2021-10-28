@@ -7,32 +7,33 @@ import mvs.translator.model.data.Translation
 class RoomCache(
     private val database: DatabaseModel
 ) : CacheDataModel {
-    override fun fromDataModelToRoom(data: List<DataModel>): List<RoomDataModel> {
-        val roomDataModel = data.map { dataModel ->
-            RoomDataModel(dataModel.text,
-                dataModel.meaning?.map { meaning ->
-                    RoomMeaning(
-                        RoomTranslation(meaning.translation?.translation, dataModel.text),
-                        meaning.imageUrl,
-                        dataModel.text
-                    )
-                })
+    override fun fromDataModelToRoom(data: List<DataModel>, word: String) {
+        val roomDataModel = data.map { RoomDataModel(it.text, word) }
+        val roomMeaning: MutableList<RoomMeaning> = mutableListOf()
+        val roomTranslation: MutableList<RoomTranslation> = mutableListOf()
+        data.forEach { dataModel ->
+            dataModel.meaning?.map {
+                roomMeaning.add(RoomMeaning(it.imageUrl, dataModel.text))
+                roomTranslation.add(RoomTranslation(it.translation!!.translation, dataModel.text))
+            }
         }
-        database.dbDao.insert(roomDataModel)
-        return roomDataModel
+        database.dbDao.insertData(roomDataModel, roomMeaning, roomTranslation)
     }
 
-    override fun fromDataBaseToDataModel(text: String): List<DataModel> {
+    override fun fromDataBaseToDataModel(word: String): List<DataModel> {
         val roomDataModel = database.dbDao.getDataModelByParentText(text)
-        val dataModel = roomDataModel.map { dataModel ->
-            DataModel(dataModel.text,
-                dataModel.meaning?.map { meaning ->
-                    Meaning(
-                        Translation(meaning.translation?.translation),
-                        meaning.imageUrl
-                    )
-                })
+        val roomMeaning = database.dbDao.getMeaningByParentText(text)
+        val roomTranslation = database.dbDao.getTranslationByParentText(text)
+        val meaningList: MutableList<Meaning> = mutableListOf()
+        roomTranslation.map { translation ->
+            roomMeaning.map { meaning ->
+                meaningList.add(Meaning(Translation(translation.translation), meaning.imageUrl))
+            }
         }
-        return dataModel
+        val dataModelList: MutableList<DataModel> = mutableListOf()
+        roomDataModel.map { dataModel ->
+            dataModelList.add(DataModel(dataModel.text, meaningList))
+        }
+        return dataModelList
     }
 }

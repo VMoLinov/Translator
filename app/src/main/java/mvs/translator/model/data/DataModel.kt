@@ -7,7 +7,7 @@ import kotlinx.android.parcel.Parcelize
 /** Модель данных */
 @Parcelize
 data class DataModel(
-    val text: String?,
+    val text: String,
     @SerializedName("meanings")
     val meaning: List<Meaning>?
 ) : Parcelable
@@ -16,12 +16,12 @@ data class DataModel(
 @Parcelize
 data class Meaning(
     val translation: Translation?,
-    val imageUrl: String?
+    val imageUrl: String
 ) : Parcelable
 
 /** Перевод слова/фразы */
 @Parcelize
 data class Translation(
     @SerializedName("text")
-    val translation: String?
+    val translation: String
 ) : Parcelable

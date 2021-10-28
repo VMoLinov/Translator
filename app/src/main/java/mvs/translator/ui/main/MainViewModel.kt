@@ -1,6 +1,8 @@
 package mvs.translator.ui.main
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import mvs.translator.model.data.AppState
 import mvs.translator.viewmodel.BaseViewModel
 
@@ -14,6 +16,9 @@ class MainViewModel(
         viewModelCoroutineScope.launch {
             val data = interactor.getData(word, isOnline)
             _mutableLiveData.value = data
+            withContext(Dispatchers.IO) {
+                interactor.insertData(data,word)
+            }
         }
     }
 
