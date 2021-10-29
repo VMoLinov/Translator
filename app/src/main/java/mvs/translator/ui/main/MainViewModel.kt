@@ -15,14 +15,12 @@ class MainViewModel(
         _mutableLiveData.value = AppState.Loading(null)
         cancelJob()
         viewModelCoroutineScope.launch {
-            withContext(Dispatchers.IO) {
-                val data = interactor.getData(word, isOnline)
-                withContext(Dispatchers.Main) {
-                    _mutableLiveData.value = data
-                }
-                if (word.isNotEmpty()) {
-                    interactor.insertData(data, word)
-                }
+            val data = interactor.getData(word, isOnline)
+            withContext(Dispatchers.Main) {
+                _mutableLiveData.value = data
+            }
+            if (word.isNotEmpty()) {
+                interactor.insertData(data, word)
             }
         }
     }

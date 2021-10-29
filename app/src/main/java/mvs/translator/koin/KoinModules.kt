@@ -4,7 +4,7 @@ import mvs.translator.model.data.DataModel
 import mvs.translator.model.data.db.CacheDataModel
 import mvs.translator.model.data.db.DatabaseModel
 import mvs.translator.model.data.db.RoomCache
-import mvs.translator.model.datasource.DataSource
+import mvs.translator.model.datasource.LocalSource
 import mvs.translator.model.datasource.RetrofitImplementation
 import mvs.translator.model.datasource.RoomImplementation
 import mvs.translator.model.repository.Repository
@@ -20,7 +20,7 @@ val application = module {
             RetrofitImplementation()
         )
     }
-    single<DataSource<List<DataModel>>>(named(NAME_LOCAL)) {
+    single<LocalSource<List<DataModel>>>(named(NAME_LOCAL)) {
         RoomImplementation(get(named(NAME_CACHE)))
     }
     single<CacheDataModel>(named(NAME_CACHE)) { RoomCache(DatabaseModel.getInstance()) }
