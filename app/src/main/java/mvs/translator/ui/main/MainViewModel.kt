@@ -1,49 +1,42 @@
 package mvs.translator.ui.main
 
-import io.reactivex.observers.DisposableObserver
-import mvs.translator.AppState
-import mvs.translator.DataModel
-import mvs.translator.interactor.main.MainInteractor
-import mvs.translator.ui.base.BaseViewModel
-import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import mvs.translator.model.data.AppState
+import mvs.translator.viewmodel.BaseViewModel
 
-class MainViewModel @Inject constructor(
+class MainViewModel(
     private val interactor: MainInteractor,
 ) : BaseViewModel<AppState>() {
 
-    fun getWordDescriptions(word: String, isOnline: Boolean) {
-        compositeDisposable.add(
-            interactor.getData(word, isOnline)
-                .subscribeOn(schedulerProvider.io)
-                .observeOn(schedulerProvider.ui)
-                .doOnSubscribe { stateLiveData.value = AppState.Loading(null) }
-                .subscribeWith(getObserver())
-        )
-    }
 
-    private fun getObserver() = object : DisposableObserver<AppState>() {
-        override fun onNext(appState: AppState) {
-            stateLiveData.value = appState
+    override fun getData(word: String, isOnline: Boolean) {
+        _mutableLiveData.value = AppState.Loading(null)
+        cancelJob()
+        viewModelCoroutineScope.launch {
+            val data = interactor.getData(word, isOnline)
+            withContext(Dispatchers.Main) {
+                _mutableLiveData.value = data
+            }
+            if (word.isNotEmpty()) {
+                interactor.insertData(data, word)
+            }
         }
-
-        override fun onError(e: Throwable) {
-            stateLiveData.value = AppState.Error(e)
-        }
-
-        override fun onComplete() = Unit
     }
 
-    fun saveState(data: List<DataModel>) {
-        savedStateHandle.set(KEY, data)
+//    Doesn't have to use withContext for Retrofit call if you use .addCallAdapterFactory(CoroutineCallAdapterFactory()). The same goes for Room
+//    private suspend fun startInteractor(word: String, isOnline: Boolean) =
+//        withContext(Dispatchers.IO) {
+//            _mutableLiveData.postValue(parseSearchResults(interactor.getData(word, isOnline)))
+//        }
+
+    override fun handleError(error: Throwable) {
+        _mutableLiveData.postValue(AppState.Error(error))
     }
 
-    fun getState(): AppState? {
-        val state = savedStateHandle.get<List<DataModel>>(KEY)
-        return if (state != null) AppState.Success(state)
-        else null
-    }
-
-    companion object {
-        private const val KEY = "key"
+    override fun onCleared() {
+        _mutableLiveData.value = AppState.Success(null)
+        super.onCleared()
     }
 }

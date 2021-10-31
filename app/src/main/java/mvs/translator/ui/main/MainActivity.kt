@@ -3,29 +3,21 @@ package mvs.translator.ui.main
 import android.os.Bundle
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import dagger.android.AndroidInjection
-import mvs.translator.AppState
-import mvs.translator.DataModel
 import mvs.translator.R
 import mvs.translator.databinding.AcMainBinding
+import mvs.translator.model.data.AppState
 import mvs.translator.ui.base.BaseActivity
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : BaseActivity<AppState>() {
+class MainActivity : BaseActivity<AppState, MainInteractor>() {
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var binding: AcMainBinding
-    private var adapter: MainAdapter? = null
-    override val viewModel: MainViewModel by lazy {
-        viewModelFactory.create(MainViewModel::class.java)
-    }
+    private val adapter = MainAdapter { }
+    override val viewModel: MainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         binding = AcMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -34,31 +26,31 @@ class MainActivity : BaseActivity<AppState>() {
             searchDialogFragment.setOnSearchClickListener(object :
                 SearchDialogFragment.OnSearchClickListener {
                 override fun onClick(searchWord: String) {
-                    viewModel.getWordDescriptions(searchWord, true)
+                    viewModel.getData(searchWord, network.isOnline())
                 }
             })
             searchDialogFragment.show(supportFragmentManager, BOTTOM_SHEET_FRAGMENT_DIALOG_TAG)
         }
         binding.mainActivityRecyclerview.layoutManager = LinearLayoutManager(applicationContext)
-        /** В ночной теме не отображается */
         binding.mainActivityRecyclerview.addItemDecoration(
             DividerItemDecoration(applicationContext, LinearLayoutManager.VERTICAL)
         )
-        /** Что здесь происходит с адаптером? */
-        adapter = MainAdapter { }
         binding.mainActivityRecyclerview.adapter = adapter
     }
 
     override fun renderData(appState: AppState) {
         when (appState) {
             is AppState.Success -> {
-                val dataModel = appState.data
-                if (dataModel.isEmpty()) {
-                    showErrorScreen(getString(R.string.empty_server_response_on_success))
+                val data = appState.data
+                if (data.isNullOrEmpty()) {
+                    showAlertDialog(
+                        getString(R.string.dialog_title_sorry),
+                        getString(R.string.empty_server_response_on_success)
+                    )
                 } else {
-                    showViewSuccess()
-                    adapter!!.submitList(dataModel)
+                    adapter.submitList(data)
                 }
+                showViewWorking()
             }
             is AppState.Loading -> {
                 showViewLoading()
@@ -72,48 +64,18 @@ class MainActivity : BaseActivity<AppState>() {
                 }
             }
             is AppState.Error -> {
-                showErrorScreen(appState.t.message)
+                showViewWorking()
+                showAlertDialog(getString(R.string.error_stub), appState.error.message)
             }
         }
     }
 
-    private fun showErrorScreen(error: String?) {
-        showViewError()
-        binding.errorTextview.text = error ?: getString(R.string.undefined_error)
-        binding.reloadButton.setOnClickListener {
-            viewModel.getWordDescriptions("hi", true)
-        }
-    }
-
-    private fun showViewSuccess() {
-        binding.successLinearLayout.visibility = VISIBLE
+    private fun showViewWorking() {
         binding.loadingFrameLayout.visibility = GONE
-        binding.errorLinearLayout.visibility = GONE
     }
 
     private fun showViewLoading() {
-        binding.successLinearLayout.visibility = GONE
         binding.loadingFrameLayout.visibility = VISIBLE
-        binding.errorLinearLayout.visibility = GONE
-    }
-
-    private fun showViewError() {
-        binding.successLinearLayout.visibility = GONE
-        binding.loadingFrameLayout.visibility = GONE
-        binding.errorLinearLayout.visibility = VISIBLE
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.saveState(adapter?.currentList as List<DataModel>)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        val state = viewModel.getState()
-        if (state != null) {
-            renderData(state)
-        }
     }
 
     companion object {
