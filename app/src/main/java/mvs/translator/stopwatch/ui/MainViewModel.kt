@@ -12,48 +12,74 @@ import mvs.translator.stopwatch.model.timestamp.Timestamp
 import mvs.translator.stopwatch.model.timestamp.TimestampProvider
 
 class MainViewModel(
-    val liveData: MutableLiveData<String> = MutableLiveData(),
-    timestamp: TimestampProvider = Timestamp,
+    val liveData: MutableLiveData<MutableList<String>> = MutableLiveData(
+        mutableListOf(
+            DEFAULT_VALUE,
+            DEFAULT_VALUE
+        )
+    ),
+    private val timestamp: TimestampProvider = Timestamp,
     private val mainViewScope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 ) : ViewModel() {
 
-    private var job: Job? = null
-    private val interactor: Interactor = StopwatchStateHolder(
-        StopwatchStateCalculator(timestamp, ElapsedTimeCalculator(timestamp)),
-        ElapsedTimeCalculator(timestamp), TimestampMillisecondsFormatter()
-    )
+    private var jobList: MutableList<Job> = mutableListOf()
+    private val interactorList: MutableList<Interactor> = mutableListOf()
+    private var index = -1
 
     private fun startJob() {
-        interactor.start()
-        mainViewScope.launch {
+        interactorList[++index].start()
+        jobList.add(mainViewScope.launch {
             while (isActive) {
-                liveData.value = interactor.getValue()
+                liveData.value?.set(index, interactorList[index].getValue())
+                liveData.value = liveData.value
                 delay(15)
             }
-        }
+        })
+    }
+
+    private fun initInteractor() {
+        interactorList.add(
+            StopwatchStateHolder(
+                StopwatchStateCalculator(timestamp, ElapsedTimeCalculator(timestamp)),
+                ElapsedTimeCalculator(timestamp), TimestampMillisecondsFormatter()
+            )
+        )
     }
 
     fun start() {
-        if (job == null) startJob()
+        if (jobList.size < TIMERS) {
+            initInteractor()
+            startJob()
+        }
     }
 
     fun pause() {
-        interactor.pause()
-        stopJob()
+        if (jobList.size != 0) {
+            interactorList[index].pause()
+            stopJob()
+            index--
+        }
     }
 
     fun stop() {
-        interactor.stop()
-        stopJob()
-        clearValue()
+        if (jobList.size != 0) {
+            interactorList[index].stop()
+            stopJob()
+            clearValue()
+        }
     }
 
     private fun stopJob() {
-        mainViewScope.coroutineContext.cancelChildren()
-        job = null
+        jobList[index].cancel()
+        jobList.removeAt(index)
     }
 
-    fun clearValue() {
-        liveData.value = "00:00:000"
+    private fun clearValue() {
+        liveData.value?.set(index--, DEFAULT_VALUE)
+    }
+
+    companion object {
+        const val TIMERS = 2
+        const val DEFAULT_VALUE = "00:00:000"
     }
 }

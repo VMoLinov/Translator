@@ -15,9 +15,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        viewModel.liveData.observe(this, { binding.textTime.text = it })
         binding.apply {
-            viewModel.clearValue()
+            viewModel.liveData.observe(this@MainActivity) {
+                textTime.text = it[0]
+                textTimeSecond.text = it[1]
+            }
             buttonStart.setOnClickListener { viewModel.start() }
             buttonPause.setOnClickListener { viewModel.pause() }
             buttonStop.setOnClickListener { viewModel.stop() }
