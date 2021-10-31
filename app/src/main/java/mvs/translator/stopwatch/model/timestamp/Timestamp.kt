@@ -1,4 +1,4 @@
-package mvs.translator.stopwatch.model.stamp
+package mvs.translator.stopwatch.model.timestamp
 
 object Timestamp : TimestampProvider {
 

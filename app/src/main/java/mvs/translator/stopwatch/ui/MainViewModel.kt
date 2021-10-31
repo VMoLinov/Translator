@@ -2,44 +2,58 @@ package mvs.translator.stopwatch.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import mvs.translator.stopwatch.model.*
+import kotlinx.coroutines.*
+import mvs.translator.stopwatch.model.Interactor
+import mvs.translator.stopwatch.model.StopwatchStateHolder
 import mvs.translator.stopwatch.model.formatter.TimestampMillisecondsFormatter
-import mvs.translator.stopwatch.model.stamp.Timestamp
-import mvs.translator.stopwatch.model.stamp.TimestampProvider
+import mvs.translator.stopwatch.model.state.StopwatchStateCalculator
+import mvs.translator.stopwatch.model.timestamp.ElapsedTimeCalculator
+import mvs.translator.stopwatch.model.timestamp.Timestamp
+import mvs.translator.stopwatch.model.timestamp.TimestampProvider
 
 class MainViewModel(
     val liveData: MutableLiveData<String> = MutableLiveData(),
     timestamp: TimestampProvider = Timestamp,
-    mainViewScope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private val mainViewScope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 ) : ViewModel() {
 
-    private val interactor: Interactor = StopwatchListOrchestrator(
-        StopwatchStateHolder(
-            StopwatchStateCalculator(
-                timestamp,
-                ElapsedTimeCalculator(timestamp)
-            ),
-            ElapsedTimeCalculator(timestamp),
-            TimestampMillisecondsFormatter()
-        ),
-        mainViewScope
+    private var job: Job? = null
+    private val interactor: Interactor = StopwatchStateHolder(
+        StopwatchStateCalculator(timestamp, ElapsedTimeCalculator(timestamp)),
+        ElapsedTimeCalculator(timestamp), TimestampMillisecondsFormatter()
     )
 
-    fun start() {
+    private fun startJob() {
         interactor.start()
-        liveData.value = interactor.ticker.value
+        mainViewScope.launch {
+            while (isActive) {
+                liveData.value = interactor.getValue()
+                delay(15)
+            }
+        }
+    }
+
+    fun start() {
+        if (job == null) startJob()
     }
 
     fun pause() {
         interactor.pause()
-        liveData.value = interactor.ticker.value
+        stopJob()
     }
 
     fun stop() {
         interactor.stop()
-        liveData.value = interactor.ticker.value
+        stopJob()
+        clearValue()
+    }
+
+    private fun stopJob() {
+        mainViewScope.coroutineContext.cancelChildren()
+        job = null
+    }
+
+    fun clearValue() {
+        liveData.value = "00:00:000"
     }
 }

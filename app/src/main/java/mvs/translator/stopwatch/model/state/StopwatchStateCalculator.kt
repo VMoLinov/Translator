@@ -1,6 +1,7 @@
-package mvs.translator.stopwatch.model
+package mvs.translator.stopwatch.model.state
 
-import mvs.translator.stopwatch.model.stamp.TimestampProvider
+import mvs.translator.stopwatch.model.timestamp.ElapsedTimeCalculator
+import mvs.translator.stopwatch.model.timestamp.TimestampProvider
 
 class StopwatchStateCalculator(
     private val timestampProvider: TimestampProvider,

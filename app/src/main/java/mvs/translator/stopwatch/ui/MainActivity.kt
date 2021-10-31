@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         viewModel.liveData.observe(this, { binding.textTime.text = it })
         binding.apply {
+            viewModel.clearValue()
             buttonStart.setOnClickListener { viewModel.start() }
             buttonPause.setOnClickListener { viewModel.pause() }
             buttonStop.setOnClickListener { viewModel.stop() }

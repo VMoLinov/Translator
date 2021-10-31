@@ -1,6 +1,6 @@
-package mvs.translator.stopwatch.model
+package mvs.translator.stopwatch.model.timestamp
 
-import mvs.translator.stopwatch.model.stamp.TimestampProvider
+import mvs.translator.stopwatch.model.state.StopwatchState
 
 class ElapsedTimeCalculator(
     private val timestampProvider: TimestampProvider,
@@ -10,9 +10,7 @@ class ElapsedTimeCalculator(
         val currentTimestamp = timestampProvider.getMilliseconds()
         val timePassedSinceStart = if (currentTimestamp > state.startTime) {
             currentTimestamp - state.startTime
-        } else {
-            0
-        }
+        } else 0
         return timePassedSinceStart + state.elapsedTime
     }
 }

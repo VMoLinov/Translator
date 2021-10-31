@@ -1,4 +1,4 @@
-package mvs.translator.stopwatch.model
+package mvs.translator.stopwatch.model.state
 
 sealed interface StopwatchState {
 
