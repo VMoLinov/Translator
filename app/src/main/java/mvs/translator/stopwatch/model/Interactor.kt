@@ -9,6 +9,4 @@ interface Interactor {
     fun stop()
 
     fun getValue(): String
-
-    fun defaultValue(): String
 }

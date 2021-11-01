@@ -18,7 +18,6 @@ class MainViewModel(
             DEFAULT_VALUE
         )
     ),
-    private val timestamp: TimestampProvider = Timestamp,
     private val mainViewScope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 ) : ViewModel() {
 
@@ -27,10 +26,11 @@ class MainViewModel(
     private var index = -1
 
     private fun startJob() {
-        interactorList[++index].start()
         jobList.add(mainViewScope.launch {
+            val timer = ++index
+            interactorList[timer].start()
             while (isActive) {
-                liveData.value?.set(index, interactorList[index].getValue())
+                liveData.value?.set(timer, interactorList[timer].getValue())
                 liveData.value = liveData.value
                 delay(15)
             }
@@ -38,6 +38,7 @@ class MainViewModel(
     }
 
     private fun initInteractor() {
+        val timestamp: TimestampProvider = Timestamp
         interactorList.add(
             StopwatchStateHolder(
                 StopwatchStateCalculator(timestamp, ElapsedTimeCalculator(timestamp)),
@@ -47,9 +48,12 @@ class MainViewModel(
     }
 
     fun start() {
-        if (jobList.size < TIMERS) {
-            initInteractor()
-            startJob()
+        when {
+            interactorList.size < TIMERS -> {
+                initInteractor()
+                startJob()
+            }
+            jobList.size < TIMERS -> startJob()
         }
     }
 
@@ -57,7 +61,6 @@ class MainViewModel(
         if (jobList.size != 0) {
             interactorList[index].pause()
             stopJob()
-            index--
         }
     }
 
@@ -76,6 +79,7 @@ class MainViewModel(
 
     private fun clearValue() {
         liveData.value?.set(index--, DEFAULT_VALUE)
+        liveData.value = liveData.value
     }
 
     companion object {
