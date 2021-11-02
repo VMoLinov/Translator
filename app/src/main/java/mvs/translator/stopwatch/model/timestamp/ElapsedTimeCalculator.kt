@@ -1,6 +1,5 @@
 package mvs.translator.stopwatch.model.timestamp
 
-import mvs.translator.stopwatch.model.timestamp.TimestampProvider
 import mvs.translator.stopwatch.model.state.StopwatchState
 
 class ElapsedTimeCalculator(

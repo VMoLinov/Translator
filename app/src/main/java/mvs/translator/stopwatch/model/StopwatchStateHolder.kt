@@ -26,6 +26,8 @@ class StopwatchStateHolder(
         currentState = StopwatchState.Paused(0)
     }
 
+    override fun isActive(): Boolean = currentState is StopwatchState.Running
+
     override fun getValue() = getStringTimeRepresentation()
 
     private fun getStringTimeRepresentation(): String {

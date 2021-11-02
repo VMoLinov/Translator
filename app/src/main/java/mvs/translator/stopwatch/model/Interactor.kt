@@ -8,5 +8,7 @@ interface Interactor {
 
     fun stop()
 
+    fun isActive(): Boolean
+
     fun getValue(): String
 }

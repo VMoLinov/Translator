@@ -12,25 +12,23 @@ import mvs.translator.stopwatch.model.timestamp.Timestamp
 import mvs.translator.stopwatch.model.timestamp.TimestampProvider
 
 class MainViewModel(
-    val liveData: MutableLiveData<MutableList<String>> = MutableLiveData(
-        mutableListOf(
-            DEFAULT_VALUE,
-            DEFAULT_VALUE
-        )
-    ),
+    val liveData: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf()),
     private val mainViewScope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 ) : ViewModel() {
 
     private var jobList: MutableList<Job> = mutableListOf()
     private val interactorList: MutableList<Interactor> = mutableListOf()
-    private var index = -1
+
+    init {
+        for (i in 1..TIMERS) liveData.value?.add(DEFAULT_VALUE)
+    }
 
     private fun startJob() {
         jobList.add(mainViewScope.launch {
-            val timer = ++index
-            interactorList[timer].start()
+            val index = jobList.lastIndex
+            interactorList[index].start()
             while (isActive) {
-                liveData.value?.set(timer, interactorList[timer].getValue())
+                liveData.value?.set(index, interactorList[index].getValue())
                 liveData.value = liveData.value
                 delay(15)
             }
@@ -48,37 +46,37 @@ class MainViewModel(
     }
 
     fun start() {
-        when {
-            interactorList.size < TIMERS -> {
-                initInteractor()
-                startJob()
-            }
-            jobList.size < TIMERS -> startJob()
+        val index = jobList.lastIndex
+        if (jobList.size != 0 && !interactorList[index].isActive()) {
+            interactorList[index].start()
+        } else if (jobList.size < TIMERS) {
+            initInteractor()
+            startJob()
+        } else {
+            interactorList[index].start()
         }
     }
 
     fun pause() {
         if (jobList.size != 0) {
+            val index = jobList.lastIndex
             interactorList[index].pause()
-            stopJob()
         }
     }
 
     fun stop() {
         if (jobList.size != 0) {
+            val index = jobList.lastIndex
             interactorList[index].stop()
-            stopJob()
-            clearValue()
+            jobList[index].cancel()
+            interactorList.removeAt(index)
+            jobList.removeAt(index)
+            clearValue(index)
         }
     }
 
-    private fun stopJob() {
-        jobList[index].cancel()
-        jobList.removeAt(index)
-    }
-
-    private fun clearValue() {
-        liveData.value?.set(index--, DEFAULT_VALUE)
+    private fun clearValue(index: Int) {
+        liveData.value?.set(index, DEFAULT_VALUE)
         liveData.value = liveData.value
     }
 
