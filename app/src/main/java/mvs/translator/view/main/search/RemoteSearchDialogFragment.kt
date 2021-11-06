@@ -1,4 +1,4 @@
-package mvs.translator.view.main
+package mvs.translator.view.main.search
 
 import android.os.Bundle
 import android.text.Editable
@@ -10,21 +10,21 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.textfield.TextInputEditText
-import mvs.translator.databinding.SearchDialogFragmentBinding
+import mvs.translator.databinding.RemoteSearchDialogFragmentBinding
 import mvs.translator.utils.getEmptyString
 
-class SearchDialogFragment : BottomSheetDialogFragment() {
+class RemoteSearchDialogFragment : BottomSheetDialogFragment() {
 
     private lateinit var searchEditText: TextInputEditText
     private lateinit var clearTextImageView: ImageView
     private lateinit var searchButton: TextView
-    private var _binding: SearchDialogFragmentBinding? = null
+    private var _binding: RemoteSearchDialogFragmentBinding? = null
     private val binding get() = _binding!!
     private var onSearchClickListener: OnSearchClickListener? = null
     private val textWatcher = object : TextWatcher {
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            if (searchEditText.text != null && !searchEditText.text.toString().isEmpty()) {
+            if (searchEditText.text != null && searchEditText.text.toString().isNotEmpty()) {
                 searchButton.isEnabled = true
                 clearTextImageView.visibility = View.VISIBLE
             } else {
@@ -53,7 +53,7 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = SearchDialogFragmentBinding.inflate(inflater, container, false)
+        _binding = RemoteSearchDialogFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -80,14 +80,11 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
-    interface OnSearchClickListener {
-
-        fun onClick(searchWord: String)
-    }
-
     companion object {
-        fun newInstance(): SearchDialogFragment {
-            return SearchDialogFragment()
+        fun newInstance(): RemoteSearchDialogFragment {
+            return RemoteSearchDialogFragment()
         }
     }
 }
+
+

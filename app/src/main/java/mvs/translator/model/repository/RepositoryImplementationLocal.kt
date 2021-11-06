@@ -14,4 +14,8 @@ class RepositoryImplementationLocal(private val dataSource: DataSourceLocal<List
     override suspend fun saveToDB(appState: AppState) {
         dataSource.saveToDB(appState)
     }
+
+    override suspend fun getSimpleWord(word: String): DataModel {
+        return dataSource.getSimpleWord(word)
+    }
 }

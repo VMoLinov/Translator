@@ -21,6 +21,11 @@ class MainInteractor(
         }
     }
 
+    suspend fun getSimpleWord(word: String) : AppState{
+        val data = dataRepositoryLocal.getSimpleWord(word)
+        return AppState.Success(listOf(data))
+    }
+
     suspend fun insertData(data: AppState) {
         when (data) {
             is AppState.Success -> dataRepositoryLocal.saveToDB(data)

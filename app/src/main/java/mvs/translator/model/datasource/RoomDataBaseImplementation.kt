@@ -13,9 +13,13 @@ class RoomDataBaseImplementation(private val historyDao: HistoryDao) :
         return mapHistoryEntityToSearchResult(historyDao.all())
     }
 
+    override suspend fun getSimpleWord(word: String): DataModel {
+        return mapHistoryEntityToSearchResult(historyDao.getDataByWord(word))
+    }
+
     override suspend fun saveToDB(appState: AppState) {
-        convertDataModelSuccessToEntity(appState)?.let {
-            historyDao.insert(it)
+        convertDataModelSuccessToEntity(appState).let {
+            historyDao.insertAll(it)
         }
     }
 }

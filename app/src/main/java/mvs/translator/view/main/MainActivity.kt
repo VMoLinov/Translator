@@ -15,6 +15,9 @@ import mvs.translator.utils.convertMeaningsToString
 import mvs.translator.view.base.BaseActivity
 import mvs.translator.view.descriptionscreen.DescriptionActivity
 import mvs.translator.view.history.HistoryActivity
+import mvs.translator.view.main.search.LocalSearchDialogFragment
+import mvs.translator.view.main.search.OnSearchClickListener
+import mvs.translator.view.main.search.RemoteSearchDialogFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity<AppState, MainInteractor>() {
@@ -24,9 +27,9 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
     override val viewModel: MainViewModel by viewModel()
     private val fabClickListener: View.OnClickListener =
         View.OnClickListener {
-            val searchDialogFragment = SearchDialogFragment.newInstance()
-            searchDialogFragment.setOnSearchClickListener(onSearchClickListener)
-            searchDialogFragment.show(supportFragmentManager, BOTTOM_SHEET_FRAGMENT_DIALOG_TAG)
+            val searchDialogFragment = RemoteSearchDialogFragment.newInstance()
+            searchDialogFragment.setOnSearchClickListener(onRemoteSearchClickListener)
+            searchDialogFragment.show(supportFragmentManager, REMOTE_SEARCH_FRAGMENT_DIALOG_TAG)
         }
     private val onListItemClickListener: MainAdapter.OnListItemClickListener =
         object : MainAdapter.OnListItemClickListener {
@@ -41,8 +44,8 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
                 )
             }
         }
-    private val onSearchClickListener: SearchDialogFragment.OnSearchClickListener =
-        object : SearchDialogFragment.OnSearchClickListener {
+    private val onRemoteSearchClickListener: OnSearchClickListener =
+        object : OnSearchClickListener {
             override fun onClick(searchWord: String) {
                 if (network.isOnline()) {
                     viewModel.getData(searchWord, true)
@@ -51,6 +54,13 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
                 }
             }
         }
+    private val onLocalSearchClickListener: OnSearchClickListener = object : OnSearchClickListener {
+        override fun onClick(searchWord: String) {
+            if (searchWord.isNotEmpty()) {
+                viewModel.getSimpleWord(searchWord)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,12 +89,20 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
                 startActivity(Intent(this, HistoryActivity::class.java))
                 true
             }
+            R.id.search_history -> {
+                val localSearchFragment = LocalSearchDialogFragment.newInstance()
+                localSearchFragment.setOnSearchClickListener(onLocalSearchClickListener)
+                localSearchFragment.show(supportFragmentManager, LOCAL_SEARCH_FRAGMENT_DIALOG_TAG)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     companion object {
-        private const val BOTTOM_SHEET_FRAGMENT_DIALOG_TAG =
+        private const val REMOTE_SEARCH_FRAGMENT_DIALOG_TAG =
             "74a54328-5d62-46bf-ab6b-cbf5fgt0-092395"
+        private const val LOCAL_SEARCH_FRAGMENT_DIALOG_TAG =
+            "74a54328-5d62-46bf-ab6b-cbf5fgt0-092396"
     }
 }

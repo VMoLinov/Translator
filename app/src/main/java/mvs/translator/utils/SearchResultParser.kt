@@ -3,6 +3,7 @@ package mvs.translator.utils
 import mvs.translator.model.data.AppState
 import mvs.translator.model.data.DataModel
 import mvs.translator.model.data.Meanings
+import mvs.translator.model.data.Translation
 import mvs.translator.room.HistoryEntity
 
 fun parseOnlineSearchResults(appState: AppState): AppState {
@@ -48,10 +49,10 @@ private fun getSuccessResultData(
 }
 
 private fun parseOnlineResult(dataModel: DataModel, newDataModels: ArrayList<DataModel>) {
-    if (!dataModel.text.isNullOrBlank() && !dataModel.meanings.isNullOrEmpty()) {
+    if (dataModel.text.isNotBlank() && !dataModel.meanings.isNullOrEmpty()) {
         val newMeanings = arrayListOf<Meanings>()
         for (meaning in dataModel.meanings) {
-            if (meaning.translation != null && !meaning.translation.translation.isNullOrBlank()) {
+            if (meaning.translation != null && meaning.translation.translation.isNotBlank()) {
                 newMeanings.add(Meanings(meaning.translation, meaning.imageUrl))
             }
         }
@@ -71,18 +72,28 @@ fun mapHistoryEntityToSearchResult(list: List<HistoryEntity>): List<DataModel> {
     return searchResult
 }
 
-fun convertDataModelSuccessToEntity(appState: AppState): HistoryEntity? {
-    return when (appState) {
+fun mapHistoryEntityToSearchResult(word: HistoryEntity): DataModel {
+    return DataModel(word.word, listOf(Meanings(Translation(word.description!!), "null")))
+}
+
+fun convertDataModelSuccessToEntity(appState: AppState): List<HistoryEntity> {
+    val list = mutableListOf<HistoryEntity>()
+    when (appState) {
         is AppState.Success -> {
             val searchResult = appState.data
-            if (searchResult.isNullOrEmpty() || searchResult[0].text.isNullOrEmpty()) {
-                null
-            } else {
-                HistoryEntity(searchResult[0].text!!, null)
+            searchResult?.forEach {
+                list.add(
+                    HistoryEntity(
+                        it.text,
+                        it.meanings?.let { meaning -> convertMeaningsToString(meaning) }
+                    )
+                )
             }
         }
-        else -> null
+        else -> {
+        }
     }
+    return list
 }
 
 fun convertMeaningsToString(meanings: List<Meanings>): String {

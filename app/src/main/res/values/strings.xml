@@ -16,4 +16,6 @@
     </string>
     <string name="dialog_tittle_sorry">Sorry</string>
     <string name="menu_title_history">History</string>
+    <string name="dialog_local_search_message">Поиск из памяти устройства</string>
+    <string name="ok">поиск</string>
 </resources>
