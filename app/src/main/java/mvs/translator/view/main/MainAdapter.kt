@@ -1,15 +1,15 @@
-package mvs.translator.ui.main
+package mvs.translator.view.main
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import mvs.translator.databinding.ItemWordBinding
+import mvs.translator.databinding.AcMainRecyclerviewItemBinding
 import mvs.translator.model.data.DataModel
 
 class MainAdapter(
-    private val itemClickListener: (DataModel) -> Unit
+    private var onListItemClickListener: OnListItemClickListener
 ) : ListAdapter<DataModel, MainAdapter.MainViewHolder>(MainCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
@@ -21,19 +21,27 @@ class MainAdapter(
     }
 
     inner class MainViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-        ItemWordBinding.inflate(parent.inflater(), parent, false).root
+        AcMainRecyclerviewItemBinding.inflate(parent.inflater(), parent, false).root
     ) {
 
         fun bind(data: DataModel) {
-            val binder = ItemWordBinding.bind(itemView)
+            val binder = AcMainRecyclerviewItemBinding.bind(itemView)
             binder.headerTextviewRecyclerItem.text = data.text
             binder.descriptionTextviewRecyclerItem.text =
-                data.meaning?.firstOrNull()?.translation?.translation
-            binder.root.setOnClickListener { itemClickListener(data) }
+                data.meanings?.joinToString { it.translation?.translation.toString() }
+            binder.root.setOnClickListener { openInNewWindow(data) }
         }
     }
 
     private fun ViewGroup.inflater() = LayoutInflater.from(context)
+
+    private fun openInNewWindow(listItemData: DataModel) {
+        onListItemClickListener.onItemClick(listItemData)
+    }
+
+    interface OnListItemClickListener {
+        fun onItemClick(data: DataModel)
+    }
 }
 
 object MainCallback : DiffUtil.ItemCallback<DataModel>() {
@@ -43,6 +51,6 @@ object MainCallback : DiffUtil.ItemCallback<DataModel>() {
     }
 
     override fun areContentsTheSame(oldItem: DataModel, newItem: DataModel): Boolean {
-        return oldItem.meaning == newItem.meaning && oldItem.text == newItem.text
+        return oldItem.meanings == newItem.meanings && oldItem.text == newItem.text
     }
 }

@@ -2,19 +2,19 @@ package mvs.translator.model.data
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /** Модель данных */
 @Parcelize
 data class DataModel(
     val text: String,
     @SerializedName("meanings")
-    val meaning: List<Meaning>?
+    val meanings: List<Meanings>?
 ) : Parcelable
 
 /** Значение слова/фразы */
 @Parcelize
-data class Meaning(
+data class Meanings(
     val translation: Translation?,
     val imageUrl: String
 ) : Parcelable
