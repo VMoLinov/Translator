@@ -7,8 +7,12 @@ import android.view.MenuItem
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import coil.ImageLoader
-import coil.request.LoadRequest
+import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import mvs.translator.R
 import mvs.translator.databinding.ActivityDescriptionBinding
 import mvs.translator.utils.network.INetworkStatus
@@ -19,6 +23,9 @@ class DescriptionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDescriptionBinding
     private lateinit var network: INetworkStatus
+    private val coroutineScope = CoroutineScope(
+        Dispatchers.Main + SupervisorJob()
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +86,7 @@ class DescriptionActivity : AppCompatActivity() {
     }
 
     private fun useCoilToLoadPhoto(imageView: ImageView, imageLink: String) {
-        val request = LoadRequest.Builder(this)
+        val request = ImageRequest.Builder(this)
             .data("https:$imageLink")
             .target(
                 onStart = {},
@@ -94,7 +101,9 @@ class DescriptionActivity : AppCompatActivity() {
                 CircleCropTransformation(),
             )
             .build()
-        ImageLoader(this).execute(request)
+        coroutineScope.launch {
+            ImageLoader(this@DescriptionActivity).enqueue(request)
+        }
     }
 
     companion object {
