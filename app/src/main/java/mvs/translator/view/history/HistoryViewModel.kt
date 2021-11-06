@@ -2,7 +2,7 @@ package mvs.translator.view.history
 
 import androidx.lifecycle.LiveData
 import kotlinx.coroutines.launch
-import mvs.translator.model.data.AppState
+import mvs.translator.data.AppState
 import mvs.translator.utils.parseLocalSearchResults
 import mvs.translator.viewmodel.BaseViewModel
 
@@ -22,7 +22,14 @@ class HistoryViewModel(private val interactor: HistoryInteractor) :
     }
 
     private suspend fun startInteractor(word: String, isOnline: Boolean) {
-        _mutableLiveData.postValue(parseLocalSearchResults(interactor.getData(word, isOnline)))
+        _mutableLiveData.postValue(
+            mvs.translator.utils.parseLocalSearchResults(
+                interactor.getData(
+                    word,
+                    isOnline
+                )
+            )
+        )
     }
 
     override fun handleError(error: Throwable) {

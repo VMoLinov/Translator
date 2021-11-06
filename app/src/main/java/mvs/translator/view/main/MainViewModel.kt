@@ -3,7 +3,7 @@ package mvs.translator.view.main
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import mvs.translator.model.data.AppState
+import mvs.translator.data.AppState
 import mvs.translator.utils.parseOnlineSearchResults
 import mvs.translator.viewmodel.BaseViewModel
 
@@ -29,7 +29,8 @@ class MainViewModel(
     //Doesn't have to use withContext for Retrofit call if you use .addCallAdapterFactory(CoroutineCallAdapterFactory()). The same goes for Room
     private suspend fun startInteractor(word: String, isOnline: Boolean) =
         withContext(Dispatchers.IO) {
-            val appState = parseOnlineSearchResults(interactor.getData(word, isOnline))
+            val appState =
+                mvs.translator.utils.parseOnlineSearchResults(interactor.getData(word, isOnline))
             _mutableLiveData.postValue(appState)
             if (isOnline) interactor.insertData(appState)
         }

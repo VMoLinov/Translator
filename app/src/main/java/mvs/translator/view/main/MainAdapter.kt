@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import mvs.translator.databinding.AcMainRecyclerviewItemBinding
-import mvs.translator.model.data.DataModel
+import mvs.translator.data.DataModel
 
 class MainAdapter(
     private var onListItemClickListener: OnListItemClickListener

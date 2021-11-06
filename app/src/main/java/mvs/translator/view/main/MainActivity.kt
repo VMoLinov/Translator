@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import mvs.translator.R
 import mvs.translator.databinding.AcMainBinding
-import mvs.translator.model.data.AppState
-import mvs.translator.model.data.DataModel
+import mvs.translator.data.AppState
+import mvs.translator.data.DataModel
 import mvs.translator.view.base.BaseActivity
 import mvs.translator.view.history.HistoryActivity
 import mvs.translator.view.main.search.LocalSearchDialogFragment

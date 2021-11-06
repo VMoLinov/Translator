@@ -2,8 +2,8 @@ package mvs.translator.view.history
 
 import android.os.Bundle
 import mvs.translator.databinding.ActivityHistoryBinding
-import mvs.translator.model.data.AppState
-import mvs.translator.model.data.DataModel
+import mvs.translator.data.AppState
+import mvs.translator.data.DataModel
 import mvs.translator.view.base.BaseActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

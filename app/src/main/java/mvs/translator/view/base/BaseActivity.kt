@@ -5,12 +5,12 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import mvs.translator.R
 import mvs.translator.databinding.LoadingLayoutBinding
-import mvs.translator.model.data.AppState
-import mvs.translator.model.data.DataModel
+import mvs.translator.data.AppState
+import mvs.translator.data.DataModel
 import mvs.translator.utils.convertMeaningsToString
-import mvs.translator.utils.network.INetworkStatus
-import mvs.translator.utils.network.NetworkStatus
-import mvs.translator.utils.ui.AlertDialogFragment
+import mvs.translator.utils.INetworkStatus
+import mvs.translator.utils.NetworkStatus
+import mvs.translator.utils.AlertDialogFragment
 import mvs.translator.view.descriptionscreen.DescriptionActivity
 import mvs.translator.viewmodel.BaseViewModel
 import mvs.translator.viewmodel.Interactor
@@ -19,13 +19,13 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity
 
     private lateinit var binding: LoadingLayoutBinding
     abstract val viewModel: BaseViewModel<T>
-    lateinit var network: INetworkStatus
+    lateinit var network: mvs.translator.utils.INetworkStatus
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = LoadingLayoutBinding.inflate(layoutInflater)
         viewModel._mutableLiveData.observe(this) { renderData(it) }
-        network = NetworkStatus(applicationContext)
+        network = mvs.translator.utils.NetworkStatus(applicationContext)
     }
 
     override fun onResume() {
@@ -78,7 +78,7 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity
                 DescriptionActivity.getIntent(
                     this,
                     it.text,
-                    convertMeaningsToString(it.meanings!!),
+                    mvs.translator.utils.convertMeaningsToString(it.meanings!!),
                     it.meanings[0].imageUrl
                 )
             )
@@ -93,7 +93,7 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity
     }
 
     protected fun showAlertDialog(title: String?, message: String?) {
-        AlertDialogFragment.newInstance(title, message)
+        mvs.translator.utils.AlertDialogFragment.newInstance(title, message)
             .show(supportFragmentManager, DIALOG_FRAGMENT_TAG)
     }
 

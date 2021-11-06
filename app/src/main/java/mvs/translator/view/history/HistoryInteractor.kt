@@ -1,9 +1,9 @@
 package mvs.translator.view.history
 
-import mvs.translator.model.data.AppState
-import mvs.translator.model.data.DataModel
-import mvs.translator.model.repository.Repository
-import mvs.translator.model.repository.RepositoryLocal
+import mvs.translator.data.AppState
+import mvs.translator.data.DataModel
+import mvs.translator.data.remote.Repository
+import mvs.translator.data.local.RepositoryLocal
 import mvs.translator.viewmodel.Interactor
 
 class HistoryInteractor(

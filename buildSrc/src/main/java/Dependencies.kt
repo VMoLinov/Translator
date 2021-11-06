@@ -5,10 +5,11 @@ object Config {
 }
 
 object Modules {
-    const val Models = ":models"
+    const val App = ":app"
     const val Data = ":data"
     const val Base = ":base"
     const val History = ":history"
+    const val Utils = ":utils"
 }
 
 object Versions {

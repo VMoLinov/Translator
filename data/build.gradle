@@ -1,0 +1,22 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+    id 'kotlin-kapt'
+}
+
+dependencies {
+
+    implementation project(Modules.Utils)
+
+    // Room
+    implementation Room.Core
+    kapt Room.Compiler
+    implementation Room.Ktx
+
+    // Retrofit
+    implementation Retrofit.retrofit
+    implementation Retrofit.converterGson
+    implementation Retrofit.loggingInterceptor
+    implementation Kotlin.CoroutinesAdapter
+}
