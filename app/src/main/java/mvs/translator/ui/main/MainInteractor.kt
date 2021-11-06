@@ -3,7 +3,6 @@ package mvs.translator.ui.main
 import mvs.translator.model.data.AppState
 import mvs.translator.model.data.DataModel
 import mvs.translator.model.datasource.LocalSource
-import mvs.translator.model.datasource.RemoteSource
 import mvs.translator.model.repository.Repository
 import mvs.translator.viewmodel.Interactor
 
