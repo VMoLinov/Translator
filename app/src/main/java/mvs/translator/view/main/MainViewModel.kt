@@ -1,4 +1,4 @@
-package mvs.translator.ui.main
+package mvs.translator.view.main
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -10,7 +10,6 @@ class MainViewModel(
     private val interactor: MainInteractor,
 ) : BaseViewModel<AppState>() {
 
-
     override fun getData(word: String, isOnline: Boolean) {
         _mutableLiveData.value = AppState.Loading(null)
         cancelJob()
@@ -20,7 +19,7 @@ class MainViewModel(
                 _mutableLiveData.value = data
             }
             if (word.isNotEmpty()) {
-                interactor.insertData(data, word)
+                interactor.insertData(data)
             }
         }
     }

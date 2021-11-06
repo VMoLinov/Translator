@@ -1,14 +1,14 @@
-package mvs.translator.ui.main
+package mvs.translator.view.main
 
 import mvs.translator.model.data.AppState
 import mvs.translator.model.data.DataModel
-import mvs.translator.model.datasource.LocalSource
 import mvs.translator.model.repository.Repository
+import mvs.translator.model.repository.RepositoryLocal
 import mvs.translator.viewmodel.Interactor
 
 class MainInteractor(
     private val remoteRepository: Repository<List<DataModel>>,
-    private val localRepository: LocalSource<List<DataModel>>
+    private val dataRepositoryLocal: RepositoryLocal<List<DataModel>>
 ) : Interactor<AppState> {
 
     override suspend fun getData(word: String, isRemoteSource: Boolean): AppState {
@@ -16,16 +16,15 @@ class MainInteractor(
             val data = remoteRepository.getData(word)
             AppState.Success(data)
         } else {
-            val data = localRepository.getData(word)
+            val data = dataRepositoryLocal.getData(word)
             AppState.Success(data)
         }
     }
 
-    override suspend fun insertData(data: AppState, word: String) {
+    suspend fun insertData(data: AppState) {
         when (data) {
-            is AppState.Success -> localRepository.saveData(data.data!!, word)
+            is AppState.Success -> dataRepositoryLocal.saveToDB(data)
             else -> {
-                TODO()
             }
         }
     }

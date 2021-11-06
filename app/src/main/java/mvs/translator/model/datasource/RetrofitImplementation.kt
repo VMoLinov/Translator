@@ -10,7 +10,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class RetrofitImplementation : RemoteSource<List<DataModel>> {
+class RetrofitImplementation : DataSource<List<DataModel>> {
 
     override suspend fun getData(word: String): List<DataModel> {
         return getService(BaseInterceptor.interceptor).searchAsync(word).await()

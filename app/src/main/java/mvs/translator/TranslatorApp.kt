@@ -2,8 +2,9 @@ package mvs.translator
 
 import android.app.Application
 import mvs.translator.koin.application
+import mvs.translator.koin.historyScreen
 import mvs.translator.koin.mainScreen
-import mvs.translator.model.data.db.DatabaseModel
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
 class TranslatorApp : Application() {
@@ -11,13 +12,8 @@ class TranslatorApp : Application() {
     override fun onCreate() {
         super.onCreate()
         startKoin {
-            modules(listOf(application, mainScreen))
+            androidContext(applicationContext)
+            modules(listOf(application, mainScreen, historyScreen))
         }
-        instance = this
-        DatabaseModel.create(instance)
-    }
-
-    companion object {
-        lateinit var instance: Application
     }
 }
