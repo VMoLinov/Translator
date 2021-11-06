@@ -7,9 +7,11 @@ import mvs.translator.R
 import mvs.translator.databinding.LoadingLayoutBinding
 import mvs.translator.model.data.AppState
 import mvs.translator.model.data.DataModel
+import mvs.translator.utils.convertMeaningsToString
 import mvs.translator.utils.network.INetworkStatus
 import mvs.translator.utils.network.NetworkStatus
 import mvs.translator.utils.ui.AlertDialogFragment
+import mvs.translator.view.descriptionscreen.DescriptionActivity
 import mvs.translator.viewmodel.BaseViewModel
 import mvs.translator.viewmodel.Interactor
 
@@ -48,6 +50,10 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity
                     }
                 }
             }
+            is AppState.Simple -> {
+                showViewWorking()
+                startDescriptionActivity(appState.data)
+            }
             is AppState.Loading -> {
                 showViewLoading()
                 if (appState.progress != null) {
@@ -63,6 +69,19 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity
                 showViewWorking()
                 showAlertDialog(getString(R.string.error_stub), appState.error.message)
             }
+        }
+    }
+
+    protected fun startDescriptionActivity(data: DataModel?) {
+        data?.let {
+            startActivity(
+                DescriptionActivity.getIntent(
+                    this,
+                    it.text,
+                    convertMeaningsToString(it.meanings!!),
+                    it.meanings[0].imageUrl
+                )
+            )
         }
     }
 

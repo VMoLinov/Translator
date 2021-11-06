@@ -11,9 +11,7 @@ import mvs.translator.R
 import mvs.translator.databinding.AcMainBinding
 import mvs.translator.model.data.AppState
 import mvs.translator.model.data.DataModel
-import mvs.translator.utils.convertMeaningsToString
 import mvs.translator.view.base.BaseActivity
-import mvs.translator.view.descriptionscreen.DescriptionActivity
 import mvs.translator.view.history.HistoryActivity
 import mvs.translator.view.main.search.LocalSearchDialogFragment
 import mvs.translator.view.main.search.OnSearchClickListener
@@ -34,14 +32,7 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
     private val onListItemClickListener: MainAdapter.OnListItemClickListener =
         object : MainAdapter.OnListItemClickListener {
             override fun onItemClick(data: DataModel) {
-                startActivity(
-                    DescriptionActivity.getIntent(
-                        this@MainActivity,
-                        data.text,
-                        convertMeaningsToString(data.meanings!!),
-                        data.meanings[0].imageUrl
-                    )
-                )
+                startDescriptionActivity(data)
             }
         }
     private val onRemoteSearchClickListener: OnSearchClickListener =

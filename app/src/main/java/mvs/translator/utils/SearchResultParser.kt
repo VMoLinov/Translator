@@ -72,8 +72,11 @@ fun mapHistoryEntityToSearchResult(list: List<HistoryEntity>): List<DataModel> {
     return searchResult
 }
 
-fun mapHistoryEntityToSearchResult(word: HistoryEntity): DataModel {
-    return DataModel(word.word, listOf(Meanings(Translation(word.description!!), "null")))
+fun mapHistoryEntityToSearchResult(entity: HistoryEntity): DataModel {
+    return DataModel(
+        entity.word,
+        listOf(Meanings(Translation(entity.description.toString()), entity.imageUrl.toString()))
+    )
 }
 
 fun convertDataModelSuccessToEntity(appState: AppState): List<HistoryEntity> {
@@ -85,7 +88,8 @@ fun convertDataModelSuccessToEntity(appState: AppState): List<HistoryEntity> {
                 list.add(
                     HistoryEntity(
                         it.text,
-                        it.meanings?.let { meaning -> convertMeaningsToString(meaning) }
+                        it.meanings?.let { meaning -> convertMeaningsToString(meaning) },
+                        it.meanings?.get(0)?.imageUrl
                     )
                 )
             }

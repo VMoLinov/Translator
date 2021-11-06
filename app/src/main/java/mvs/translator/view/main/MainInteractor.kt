@@ -21,9 +21,9 @@ class MainInteractor(
         }
     }
 
-    suspend fun getSimpleWord(word: String) : AppState{
+    suspend fun getSimpleWord(word: String): AppState {
         val data = dataRepositoryLocal.getSimpleWord(word)
-        return AppState.Success(listOf(data))
+        return AppState.Simple(data)
     }
 
     suspend fun insertData(data: AppState) {

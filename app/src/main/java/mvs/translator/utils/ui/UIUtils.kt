@@ -2,7 +2,6 @@ package mvs.translator.utils.ui
 
 import android.content.Context
 import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.DialogFragment
 import mvs.translator.R
 
 fun getStubAlertDialog(context: Context): AlertDialog {

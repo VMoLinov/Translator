@@ -21,7 +21,7 @@ class MainViewModel(
         _mutableLiveData.value = AppState.Loading(null)
         cancelJob()
         viewModelCoroutineScope.launch {
-            val appState = parseOnlineSearchResults(interactor.getSimpleWord(word))
+            val appState = interactor.getSimpleWord(word)
             _mutableLiveData.postValue(appState)
         }
     }

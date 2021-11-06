@@ -7,5 +7,5 @@ interface RepositoryLocal<T> : Repository<T> {
 
     suspend fun saveToDB(appState: AppState)
 
-    suspend fun getSimpleWord(word: String) : DataModel
+    suspend fun getSimpleWord(word: String): DataModel
 }
