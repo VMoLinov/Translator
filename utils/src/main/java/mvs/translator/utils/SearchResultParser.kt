@@ -1,10 +1,10 @@
 package mvs.translator.utils
 
-import mvs.translator.data.local.HistoryEntity
-import mvs.translator.data.AppState
-import mvs.translator.data.DataModel
-import mvs.translator.data.Meanings
-import mvs.translator.data.Translation
+import mvs.translator.model.room.HistoryEntity
+import mvs.translator.model.AppState
+import mvs.translator.model.DataModel
+import mvs.translator.model.Meanings
+import mvs.translator.model.Translation
 
 fun parseOnlineSearchResults(appState: AppState): AppState {
     return AppState.Success(mapResult(appState, true))
@@ -53,7 +53,12 @@ private fun parseOnlineResult(dataModel: DataModel, newDataModels: ArrayList<Dat
         val newMeanings = arrayListOf<Meanings>()
         for (meaning in dataModel.meanings!!) {
             if (meaning.translation != null && meaning.translation!!.translation.isNotBlank()) {
-                newMeanings.add(Meanings(meaning.translation, meaning.imageUrl))
+                newMeanings.add(
+                    Meanings(
+                        meaning.translation,
+                        meaning.imageUrl
+                    )
+                )
             }
         }
         if (newMeanings.isNotEmpty()) {
@@ -75,7 +80,12 @@ fun mapHistoryEntityToSearchResult(list: List<HistoryEntity>): List<DataModel> {
 fun mapHistoryEntityToSearchResult(entity: HistoryEntity): DataModel {
     return DataModel(
         entity.word,
-        listOf(Meanings(Translation(entity.description.toString()), entity.imageUrl.toString()))
+        listOf(
+            Meanings(
+                Translation(entity.description.toString()),
+                entity.imageUrl.toString()
+            )
+        )
     )
 }
 

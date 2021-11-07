@@ -9,3 +9,4 @@ rootProject.name = "Translator"
 include ':app'
 include ':data'
 include ':utils'
+include ':model'

@@ -5,27 +5,23 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import mvs.translator.R
 import mvs.translator.databinding.LoadingLayoutBinding
-import mvs.translator.data.AppState
-import mvs.translator.data.DataModel
-import mvs.translator.utils.convertMeaningsToString
-import mvs.translator.utils.INetworkStatus
-import mvs.translator.utils.NetworkStatus
-import mvs.translator.utils.AlertDialogFragment
+import mvs.translator.utils.network.INetworkStatus
+import mvs.translator.utils.network.NetworkStatus
 import mvs.translator.view.descriptionscreen.DescriptionActivity
 import mvs.translator.viewmodel.BaseViewModel
 import mvs.translator.viewmodel.Interactor
 
-abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity() {
+abstract class BaseActivity<T : mvs.translator.model.AppState, I : Interactor<T>> : AppCompatActivity() {
 
     private lateinit var binding: LoadingLayoutBinding
     abstract val viewModel: BaseViewModel<T>
-    lateinit var network: mvs.translator.utils.INetworkStatus
+    lateinit var network: INetworkStatus
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = LoadingLayoutBinding.inflate(layoutInflater)
         viewModel._mutableLiveData.observe(this) { renderData(it) }
-        network = mvs.translator.utils.NetworkStatus(applicationContext)
+        network = NetworkStatus(applicationContext)
     }
 
     override fun onResume() {
@@ -37,7 +33,7 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity
 
     protected fun renderData(appState: T) {
         when (appState) {
-            is AppState.Success -> {
+            is mvs.translator.model.AppState.Success -> {
                 showViewWorking()
                 appState.data?.let {
                     if (it.isEmpty()) {
@@ -50,36 +46,36 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity
                     }
                 }
             }
-            is AppState.Simple -> {
+            is mvs.translator.model.AppState.Simple -> {
                 showViewWorking()
                 startDescriptionActivity(appState.data)
             }
-            is AppState.Loading -> {
+            is mvs.translator.model.AppState.Loading -> {
                 showViewLoading()
                 if (appState.progress != null) {
                     binding.progressBarHorizontal.visibility = View.VISIBLE
                     binding.progressBarRound.visibility = View.GONE
-                    binding.progressBarHorizontal.progress = appState.progress
+                    binding.progressBarHorizontal.progress = appState.progress!!
                 } else {
                     binding.progressBarHorizontal.visibility = View.GONE
                     binding.progressBarRound.visibility = View.VISIBLE
                 }
             }
-            is AppState.Error -> {
+            is mvs.translator.model.AppState.Error -> {
                 showViewWorking()
                 showAlertDialog(getString(R.string.error_stub), appState.error.message)
             }
         }
     }
 
-    protected fun startDescriptionActivity(data: DataModel?) {
+    protected fun startDescriptionActivity(data: mvs.translator.model.DataModel?) {
         data?.let {
             startActivity(
                 DescriptionActivity.getIntent(
                     this,
                     it.text,
                     mvs.translator.utils.convertMeaningsToString(it.meanings!!),
-                    it.meanings[0].imageUrl
+                    it.meanings!![0].imageUrl
                 )
             )
         }
@@ -109,7 +105,7 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity
         return supportFragmentManager.findFragmentByTag(DIALOG_FRAGMENT_TAG) == null
     }
 
-    abstract fun setDataToAdapter(data: List<DataModel>)
+    abstract fun setDataToAdapter(data: List<mvs.translator.model.DataModel>)
 
     companion object {
         private const val DIALOG_FRAGMENT_TAG = "74a54328-5d62-46bf-ab6b-cbf5d8c79522"

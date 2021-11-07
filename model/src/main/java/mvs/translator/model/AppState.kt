@@ -1,4 +1,4 @@
-package mvs.translator.data
+package mvs.translator.model
 
 sealed interface AppState {
     data class Success(val data: List<DataModel>?) : AppState

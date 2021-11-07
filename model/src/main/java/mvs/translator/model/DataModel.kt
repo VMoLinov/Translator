@@ -1,4 +1,4 @@
-package mvs.translator.data
+package mvs.translator.model
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName

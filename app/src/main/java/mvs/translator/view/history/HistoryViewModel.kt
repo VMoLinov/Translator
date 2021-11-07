@@ -2,21 +2,20 @@ package mvs.translator.view.history
 
 import androidx.lifecycle.LiveData
 import kotlinx.coroutines.launch
-import mvs.translator.data.AppState
-import mvs.translator.utils.parseLocalSearchResults
+import mvs.translator.model.AppState
 import mvs.translator.viewmodel.BaseViewModel
 
 class HistoryViewModel(private val interactor: HistoryInteractor) :
-    BaseViewModel<AppState>() {
+    BaseViewModel<mvs.translator.model.AppState>() {
 
-    private val liveDataForViewToObserve: LiveData<AppState> = _mutableLiveData
+    private val liveDataForViewToObserve: LiveData<mvs.translator.model.AppState> = _mutableLiveData
 
-    fun subscribe(): LiveData<AppState> {
+    fun subscribe(): LiveData<mvs.translator.model.AppState> {
         return liveDataForViewToObserve
     }
 
     override fun getData(word: String, isOnline: Boolean) {
-        _mutableLiveData.value = AppState.Loading(null)
+        _mutableLiveData.value = mvs.translator.model.AppState.Loading(null)
         cancelJob()
         viewModelCoroutineScope.launch { startInteractor(word, isOnline) }
     }
@@ -33,11 +32,11 @@ class HistoryViewModel(private val interactor: HistoryInteractor) :
     }
 
     override fun handleError(error: Throwable) {
-        _mutableLiveData.postValue(AppState.Error(error))
+        _mutableLiveData.postValue(mvs.translator.model.AppState.Error(error))
     }
 
     override fun onCleared() {
-        _mutableLiveData.value = AppState.Success(null)//Set View to original state in onStop
+        _mutableLiveData.value = mvs.translator.model.AppState.Success(null)//Set View to original state in onStop
         super.onCleared()
     }
 }

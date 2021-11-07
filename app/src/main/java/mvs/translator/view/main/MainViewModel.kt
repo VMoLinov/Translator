@@ -3,22 +3,21 @@ package mvs.translator.view.main
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import mvs.translator.data.AppState
-import mvs.translator.utils.parseOnlineSearchResults
+import mvs.translator.model.AppState
 import mvs.translator.viewmodel.BaseViewModel
 
 class MainViewModel(
     private val interactor: MainInteractor,
-) : BaseViewModel<AppState>() {
+) : BaseViewModel<mvs.translator.model.AppState>() {
 
     override fun getData(word: String, isOnline: Boolean) {
-        _mutableLiveData.value = AppState.Loading(null)
+        _mutableLiveData.value = mvs.translator.model.AppState.Loading(null)
         cancelJob()
         viewModelCoroutineScope.launch { startInteractor(word, isOnline) }
     }
 
     fun getSimpleWord(word: String) {
-        _mutableLiveData.value = AppState.Loading(null)
+        _mutableLiveData.value = mvs.translator.model.AppState.Loading(null)
         cancelJob()
         viewModelCoroutineScope.launch {
             val appState = interactor.getSimpleWord(word)
@@ -36,11 +35,11 @@ class MainViewModel(
         }
 
     override fun handleError(error: Throwable) {
-        _mutableLiveData.postValue(AppState.Error(error))
+        _mutableLiveData.postValue(mvs.translator.model.AppState.Error(error))
     }
 
     override fun onCleared() {
-        _mutableLiveData.value = AppState.Success(null)
+        _mutableLiveData.value = mvs.translator.model.AppState.Success(null)
         super.onCleared()
     }
 }

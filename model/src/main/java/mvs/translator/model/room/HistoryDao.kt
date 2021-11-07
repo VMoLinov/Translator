@@ -1,4 +1,4 @@
-package mvs.translator.data.local
+package mvs.translator.model.room
 
 import androidx.room.*
 

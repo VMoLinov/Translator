@@ -6,9 +6,10 @@ object Config {
 
 object Modules {
     const val App = ":app"
-    const val Data = ":data"
     const val Base = ":base"
+    const val Data = ":data"
     const val History = ":history"
+    const val Model = ":model"
     const val Utils = ":utils"
 }
 

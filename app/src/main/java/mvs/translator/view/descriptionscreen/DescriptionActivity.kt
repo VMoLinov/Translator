@@ -15,21 +15,20 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import mvs.translator.R
 import mvs.translator.databinding.ActivityDescriptionBinding
-import mvs.translator.utils.INetworkStatus
-import mvs.translator.utils.NetworkStatus
-import mvs.translator.utils.AlertDialogFragment
+import mvs.translator.utils.network.INetworkStatus
+import mvs.translator.utils.network.NetworkStatus
 
 class DescriptionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDescriptionBinding
-    private lateinit var network: mvs.translator.utils.INetworkStatus
+    private lateinit var network: INetworkStatus
     private val coroutineScope = CoroutineScope(
         Dispatchers.Main + SupervisorJob()
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        network = mvs.translator.utils.NetworkStatus(applicationContext)
+        network = NetworkStatus(applicationContext)
         binding = ActivityDescriptionBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setActionbarHomeButtonAsUp()

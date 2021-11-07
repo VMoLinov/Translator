@@ -34,6 +34,8 @@ android {
 dependencies {
 
     implementation project(Modules.Data)
+    implementation project(Modules.Utils)
+    implementation project(Modules.Model)
 
     implementation Android.CoreKtx
     implementation Android.AppCompat
