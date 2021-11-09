@@ -1,7 +1,6 @@
 package mvs.translator.data.remote
 
 import kotlinx.coroutines.Deferred
-import mvs.translator.model.DataModel
 import retrofit2.http.GET
 import retrofit2.http.Query
 

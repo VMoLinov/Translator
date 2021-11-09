@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import mvs.translator.databinding.AcMainRecyclerviewItemBinding
-import mvs.translator.model.DataModel
 
 class MainAdapter(
     private var onListItemClickListener: OnListItemClickListener
@@ -46,11 +45,17 @@ class MainAdapter(
 
 object MainCallback : DiffUtil.ItemCallback<mvs.translator.model.DataModel>() {
 
-    override fun areItemsTheSame(oldItem: mvs.translator.model.DataModel, newItem: mvs.translator.model.DataModel): Boolean {
+    override fun areItemsTheSame(
+        oldItem: mvs.translator.model.DataModel,
+        newItem: mvs.translator.model.DataModel
+    ): Boolean {
         return oldItem == newItem
     }
 
-    override fun areContentsTheSame(oldItem: mvs.translator.model.DataModel, newItem: mvs.translator.model.DataModel): Boolean {
+    override fun areContentsTheSame(
+        oldItem: mvs.translator.model.DataModel,
+        newItem: mvs.translator.model.DataModel
+    ): Boolean {
         return oldItem.meanings == newItem.meanings && oldItem.text == newItem.text
     }
 }

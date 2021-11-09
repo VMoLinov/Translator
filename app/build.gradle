@@ -43,10 +43,7 @@ dependencies {
     implementation Android.ConstraintLayout
     implementation Android.SwipeRefreshLayout
 
-    // Retrofit
-    implementation Retrofit.retrofit
-    implementation Retrofit.converterGson
-    implementation Retrofit.loggingInterceptor
+    implementation Room.Ktx
 
     // Coroutines
     implementation Kotlin.Coroutines
@@ -60,11 +57,6 @@ dependencies {
 
     // Coil
     implementation Coil.Coil
-
-    // Room
-    implementation Room.Core
-    kapt Room.Compiler
-    implementation Room.Ktx
 
     testImplementation Tests.JUnit
     androidTestImplementation Tests.AndroidJUnit

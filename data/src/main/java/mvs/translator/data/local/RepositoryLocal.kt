@@ -1,7 +1,5 @@
 package mvs.translator.data.local
 
-import mvs.translator.model.AppState
-import mvs.translator.model.DataModel
 import mvs.translator.data.remote.Repository
 
 interface RepositoryLocal<T> : Repository<T> {

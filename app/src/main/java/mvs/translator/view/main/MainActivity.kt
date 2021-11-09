@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import mvs.translator.R
 import mvs.translator.databinding.AcMainBinding
 import mvs.translator.model.AppState
-import mvs.translator.model.DataModel
 import mvs.translator.view.base.BaseActivity
 import mvs.translator.view.history.HistoryActivity
 import mvs.translator.view.main.search.LocalSearchDialogFragment
@@ -18,7 +17,7 @@ import mvs.translator.view.main.search.OnSearchClickListener
 import mvs.translator.view.main.search.RemoteSearchDialogFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : BaseActivity<mvs.translator.model.AppState, MainInteractor>() {
+class MainActivity : BaseActivity<AppState, MainInteractor>() {
 
     private lateinit var binding: AcMainBinding
     private val adapter: MainAdapter by lazy { MainAdapter(onListItemClickListener) }

@@ -1,8 +1,5 @@
 package mvs.translator.data.local
 
-import mvs.translator.model.AppState
-import mvs.translator.model.DataModel
-
 class RepositoryImplementationLocal(private val dataSource: DataSourceLocal<List<mvs.translator.model.DataModel>>) :
     RepositoryLocal<List<mvs.translator.model.DataModel>> {
 

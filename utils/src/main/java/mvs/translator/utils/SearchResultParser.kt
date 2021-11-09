@@ -1,10 +1,10 @@
 package mvs.translator.utils
 
-import mvs.translator.model.room.HistoryEntity
 import mvs.translator.model.AppState
 import mvs.translator.model.DataModel
 import mvs.translator.model.Meanings
 import mvs.translator.model.Translation
+import mvs.translator.model.room.HistoryEntity
 
 fun parseOnlineSearchResults(appState: AppState): AppState {
     return AppState.Success(mapResult(appState, true))

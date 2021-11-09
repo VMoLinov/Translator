@@ -1,7 +1,5 @@
 package mvs.translator.data.remote
 
-import mvs.translator.model.DataModel
-
 class RepositoryImplementation(private val dataSource: DataSource<List<mvs.translator.model.DataModel>>) :
     Repository<List<mvs.translator.model.DataModel>> {
 

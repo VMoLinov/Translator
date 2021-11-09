@@ -5,13 +5,16 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import mvs.translator.R
 import mvs.translator.databinding.LoadingLayoutBinding
+import mvs.translator.model.AppState
+import mvs.translator.model.DataModel
 import mvs.translator.utils.network.INetworkStatus
 import mvs.translator.utils.network.NetworkStatus
 import mvs.translator.view.descriptionscreen.DescriptionActivity
 import mvs.translator.viewmodel.BaseViewModel
 import mvs.translator.viewmodel.Interactor
 
-abstract class BaseActivity<T : mvs.translator.model.AppState, I : Interactor<T>> : AppCompatActivity() {
+abstract class BaseActivity<T : AppState, I : Interactor<T>> :
+    AppCompatActivity() {
 
     private lateinit var binding: LoadingLayoutBinding
     abstract val viewModel: BaseViewModel<T>
@@ -33,7 +36,7 @@ abstract class BaseActivity<T : mvs.translator.model.AppState, I : Interactor<T>
 
     protected fun renderData(appState: T) {
         when (appState) {
-            is mvs.translator.model.AppState.Success -> {
+            is AppState.Success -> {
                 showViewWorking()
                 appState.data?.let {
                     if (it.isEmpty()) {
@@ -46,11 +49,11 @@ abstract class BaseActivity<T : mvs.translator.model.AppState, I : Interactor<T>
                     }
                 }
             }
-            is mvs.translator.model.AppState.Simple -> {
+            is AppState.Simple -> {
                 showViewWorking()
                 startDescriptionActivity(appState.data)
             }
-            is mvs.translator.model.AppState.Loading -> {
+            is AppState.Loading -> {
                 showViewLoading()
                 if (appState.progress != null) {
                     binding.progressBarHorizontal.visibility = View.VISIBLE
@@ -61,14 +64,14 @@ abstract class BaseActivity<T : mvs.translator.model.AppState, I : Interactor<T>
                     binding.progressBarRound.visibility = View.VISIBLE
                 }
             }
-            is mvs.translator.model.AppState.Error -> {
+            is AppState.Error -> {
                 showViewWorking()
                 showAlertDialog(getString(R.string.error_stub), appState.error.message)
             }
         }
     }
 
-    protected fun startDescriptionActivity(data: mvs.translator.model.DataModel?) {
+    protected fun startDescriptionActivity(data: DataModel?) {
         data?.let {
             startActivity(
                 DescriptionActivity.getIntent(
@@ -105,7 +108,7 @@ abstract class BaseActivity<T : mvs.translator.model.AppState, I : Interactor<T>
         return supportFragmentManager.findFragmentByTag(DIALOG_FRAGMENT_TAG) == null
     }
 
-    abstract fun setDataToAdapter(data: List<mvs.translator.model.DataModel>)
+    abstract fun setDataToAdapter(data: List<DataModel>)
 
     companion object {
         private const val DIALOG_FRAGMENT_TAG = "74a54328-5d62-46bf-ab6b-cbf5d8c79522"
