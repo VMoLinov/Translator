@@ -16,3 +16,24 @@ buildscript {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+subprojects {
+    afterEvaluate { project ->
+        if (project.plugins.findPlugin('android') ?: project.plugins.findPlugin('android-library')) {
+            android {
+                compileSdkVersion Config.compileSdk
+                buildFeatures {
+                    viewBinding true
+                }
+                defaultConfig {
+                    minSdk Config.minSdk
+                    targetSdk Config.targetSdk
+                }
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_1_8
+                    targetCompatibility JavaVersion.VERSION_1_8
+                }
+            }
+        }
+    }
+}

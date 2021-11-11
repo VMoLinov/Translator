@@ -11,7 +11,7 @@ import android.widget.TextView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.textfield.TextInputEditText
 import mvs.translator.databinding.RemoteSearchDialogFragmentBinding
-import mvs.translator.utils.getEmptyString
+import mvs.translator.utils.ui.getEmptyString
 
 class RemoteSearchDialogFragment : BottomSheetDialogFragment() {
 

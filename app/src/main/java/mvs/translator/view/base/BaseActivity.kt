@@ -5,17 +5,16 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import mvs.translator.R
 import mvs.translator.databinding.LoadingLayoutBinding
-import mvs.translator.model.data.AppState
-import mvs.translator.model.data.DataModel
-import mvs.translator.utils.convertMeaningsToString
+import mvs.translator.model.AppState
+import mvs.translator.model.DataModel
 import mvs.translator.utils.network.INetworkStatus
 import mvs.translator.utils.network.NetworkStatus
-import mvs.translator.utils.ui.AlertDialogFragment
 import mvs.translator.view.descriptionscreen.DescriptionActivity
 import mvs.translator.viewmodel.BaseViewModel
 import mvs.translator.viewmodel.Interactor
 
-abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity() {
+abstract class BaseActivity<T : AppState, I : Interactor<T>> :
+    AppCompatActivity() {
 
     private lateinit var binding: LoadingLayoutBinding
     abstract val viewModel: BaseViewModel<T>
@@ -59,7 +58,7 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity
                 if (appState.progress != null) {
                     binding.progressBarHorizontal.visibility = View.VISIBLE
                     binding.progressBarRound.visibility = View.GONE
-                    binding.progressBarHorizontal.progress = appState.progress
+                    binding.progressBarHorizontal.progress = appState.progress!!
                 } else {
                     binding.progressBarHorizontal.visibility = View.GONE
                     binding.progressBarRound.visibility = View.VISIBLE
@@ -78,8 +77,8 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity
                 DescriptionActivity.getIntent(
                     this,
                     it.text,
-                    convertMeaningsToString(it.meanings!!),
-                    it.meanings[0].imageUrl
+                    mvs.translator.utils.convertMeaningsToString(it.meanings!!),
+                    it.meanings!![0].imageUrl
                 )
             )
         }
@@ -93,7 +92,7 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity
     }
 
     protected fun showAlertDialog(title: String?, message: String?) {
-        AlertDialogFragment.newInstance(title, message)
+        mvs.translator.utils.AlertDialogFragment.newInstance(title, message)
             .show(supportFragmentManager, DIALOG_FRAGMENT_TAG)
     }
 

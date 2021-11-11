@@ -7,18 +7,24 @@ import android.view.MenuItem
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import coil.ImageLoader
-import coil.request.LoadRequest
+import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import mvs.translator.R
 import mvs.translator.databinding.ActivityDescriptionBinding
 import mvs.translator.utils.network.INetworkStatus
 import mvs.translator.utils.network.NetworkStatus
-import mvs.translator.utils.ui.AlertDialogFragment
 
 class DescriptionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDescriptionBinding
     private lateinit var network: INetworkStatus
+    private val coroutineScope = CoroutineScope(
+        Dispatchers.Main + SupervisorJob()
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +67,7 @@ class DescriptionActivity : AppCompatActivity() {
         if (network.isOnline()) {
             setData()
         } else {
-            AlertDialogFragment.newInstance(
+            mvs.translator.utils.AlertDialogFragment.newInstance(
                 getString(R.string.dialog_title_device_is_offline),
                 getString(R.string.dialog_message_device_is_offline)
             ).show(
@@ -79,7 +85,7 @@ class DescriptionActivity : AppCompatActivity() {
     }
 
     private fun useCoilToLoadPhoto(imageView: ImageView, imageLink: String) {
-        val request = LoadRequest.Builder(this)
+        val request = ImageRequest.Builder(this)
             .data("https:$imageLink")
             .target(
                 onStart = {},
@@ -94,7 +100,9 @@ class DescriptionActivity : AppCompatActivity() {
                 CircleCropTransformation(),
             )
             .build()
-        ImageLoader(this).execute(request)
+        coroutineScope.launch {
+            ImageLoader(this@DescriptionActivity).enqueue(request)
+        }
     }
 
     companion object {

@@ -1,0 +1,16 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+    id 'kotlin-kapt'
+}
+
+dependencies {
+
+    // Room
+    implementation Room.Core
+    kapt Room.Compiler
+    implementation Room.Ktx
+
+    implementation Retrofit.converterGson
+}

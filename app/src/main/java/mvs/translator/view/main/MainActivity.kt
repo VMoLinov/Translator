@@ -9,8 +9,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import mvs.translator.R
 import mvs.translator.databinding.AcMainBinding
-import mvs.translator.model.data.AppState
-import mvs.translator.model.data.DataModel
+import mvs.translator.model.AppState
 import mvs.translator.view.base.BaseActivity
 import mvs.translator.view.history.HistoryActivity
 import mvs.translator.view.main.search.LocalSearchDialogFragment
@@ -31,7 +30,7 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
         }
     private val onListItemClickListener: MainAdapter.OnListItemClickListener =
         object : MainAdapter.OnListItemClickListener {
-            override fun onItemClick(data: DataModel) {
+            override fun onItemClick(data: mvs.translator.model.DataModel) {
                 startDescriptionActivity(data)
             }
         }
@@ -65,7 +64,7 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
         binding.mainActivityRecyclerview.adapter = adapter
     }
 
-    override fun setDataToAdapter(data: List<DataModel>) {
+    override fun setDataToAdapter(data: List<mvs.translator.model.DataModel>) {
         adapter.submitList(data)
     }
 

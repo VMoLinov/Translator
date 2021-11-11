@@ -2,8 +2,7 @@ package mvs.translator.view.history
 
 import android.os.Bundle
 import mvs.translator.databinding.ActivityHistoryBinding
-import mvs.translator.model.data.AppState
-import mvs.translator.model.data.DataModel
+import mvs.translator.model.AppState
 import mvs.translator.view.base.BaseActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -26,7 +25,7 @@ class HistoryActivity : BaseActivity<AppState, HistoryInteractor>() {
         viewModel.getData("", false)
     }
 
-    override fun setDataToAdapter(data: List<DataModel>) {
+    override fun setDataToAdapter(data: List<mvs.translator.model.DataModel>) {
         adapter.setData(data)
     }
 
