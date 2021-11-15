@@ -18,6 +18,7 @@ class HistoryActivity : BaseActivity<AppState, HistoryInteractor>() {
         setContentView(binding.root)
         iniViewModel()
         initViews()
+        subscribeToNetworkChange(binding.historyContainer)
     }
 
     override fun onResume() {

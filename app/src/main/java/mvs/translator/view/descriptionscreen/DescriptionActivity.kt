@@ -5,11 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -36,13 +36,15 @@ class DescriptionActivity : AppCompatActivity() {
         binding.descriptionScreenSwipeRefreshLayout.setOnRefreshListener { startLoadingOrShowError() }
         setData()
         network.availableNetworks.observe(this, {
-            if (!it) {
-                Toast.makeText(
-                    this,
-                    R.string.dialog_message_device_is_offline,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+            val snack = Snackbar.make(
+                binding.descriptionScreenSwipeRefreshLayout,
+                resources.getString(R.string.dialog_message_device_is_offline),
+                Snackbar.LENGTH_INDEFINITE
+            )
+            network.availableNetworks.observe(this, {
+                if (it == false) snack.show()
+                else snack.dismiss()
+            })
         })
     }
 

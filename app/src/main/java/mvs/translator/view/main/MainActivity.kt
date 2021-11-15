@@ -62,6 +62,7 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
             DividerItemDecoration(applicationContext, LinearLayoutManager.VERTICAL)
         )
         binding.mainActivityRecyclerview.adapter = adapter
+        subscribeToNetworkChange(binding.mainContainer)
     }
 
     override fun setDataToAdapter(data: List<DataModel>) {

@@ -2,7 +2,7 @@ package mvs.translator.view.base
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
+import com.google.android.material.snackbar.Snackbar
 import mvs.translator.R
 import mvs.translator.databinding.LoadingLayoutBinding
 import mvs.translator.model.AppState
@@ -25,26 +25,18 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : ScopeActivity() {
         binding = LoadingLayoutBinding.inflate(layoutInflater)
         viewModel._mutableLiveData.observe(this) { renderData(it) }
         network = NetworkStatus(applicationContext)
-        subscribeToNetworkChange()
     }
 
-    private fun subscribeToNetworkChange() {
+    fun subscribeToNetworkChange(view: View) {
+        val snack = Snackbar.make(
+            view,
+            resources.getString(R.string.dialog_message_device_is_offline),
+            Snackbar.LENGTH_INDEFINITE
+        )
         network.availableNetworks.observe(this, {
-            if (!it) {
-                Toast.makeText(
-                    this@BaseActivity,
-                    R.string.dialog_message_device_is_offline,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+            if (it == false) snack.show()
+            else snack.dismiss()
         })
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (network.availableNetworks.value == false && isDialogNull()) {
-            showNoInternetConnectionDialog()
-        }
     }
 
     protected fun renderData(appState: T) {

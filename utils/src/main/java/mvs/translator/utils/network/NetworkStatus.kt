@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData
 
 open class NetworkStatus(context: Context) : OnlineRepository {
 
-    override val availableNetworks = MutableLiveData<Boolean>()
+    override val availableNetworks: MutableLiveData<Boolean> = MutableLiveData(false)
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     private val request: NetworkRequest = NetworkRequest.Builder().build()
