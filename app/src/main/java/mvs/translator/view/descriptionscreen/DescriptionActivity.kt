@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import coil.ImageLoader
 import coil.request.ImageRequest
@@ -15,13 +16,13 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import mvs.translator.R
 import mvs.translator.databinding.ActivityDescriptionBinding
-import mvs.translator.utils.network.INetworkStatus
+import mvs.translator.utils.AlertDialogFragment
 import mvs.translator.utils.network.NetworkStatus
 
 class DescriptionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDescriptionBinding
-    private lateinit var network: INetworkStatus
+    private lateinit var network: NetworkStatus
     private val coroutineScope = CoroutineScope(
         Dispatchers.Main + SupervisorJob()
     )
@@ -34,6 +35,15 @@ class DescriptionActivity : AppCompatActivity() {
         setActionbarHomeButtonAsUp()
         binding.descriptionScreenSwipeRefreshLayout.setOnRefreshListener { startLoadingOrShowError() }
         setData()
+        network.availableNetworks.observe(this, {
+            if (!it) {
+                Toast.makeText(
+                    this,
+                    R.string.dialog_message_device_is_offline,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -60,14 +70,15 @@ class DescriptionActivity : AppCompatActivity() {
             stopRefreshAnimationIfNeeded()
         } else {
             useCoilToLoadPhoto(binding.descriptionImageview, imageLink)
+            stopRefreshAnimationIfNeeded()
         }
     }
 
     private fun startLoadingOrShowError() {
-        if (network.isOnline()) {
+        if (network.availableNetworks.value == true) {
             setData()
         } else {
-            mvs.translator.utils.AlertDialogFragment.newInstance(
+            AlertDialogFragment.newInstance(
                 getString(R.string.dialog_title_device_is_offline),
                 getString(R.string.dialog_message_device_is_offline)
             ).show(

@@ -3,8 +3,9 @@ package mvs.translator.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
+import mvs.translator.model.AppState
 
-abstract class BaseViewModel<T : mvs.translator.model.AppState>(
+abstract class BaseViewModel<T : AppState>(
     open val _mutableLiveData: MutableLiveData<T> = MutableLiveData()
 ) : ViewModel() {
 

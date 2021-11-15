@@ -4,32 +4,29 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
-import androidx.core.content.getSystemService
+import androidx.lifecycle.MutableLiveData
 
-class NetworkStatus(context: Context) : INetworkStatus {
+open class NetworkStatus(context: Context) : OnlineRepository {
 
-    private var status: Boolean
+    override val availableNetworks = MutableLiveData<Boolean>()
+    private val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private val request: NetworkRequest = NetworkRequest.Builder().build()
+    private val callback = object : ConnectivityManager.NetworkCallback() {
+        override fun onAvailable(network: Network) {
+            availableNetworks.postValue(true)
+        }
 
-    init {
-        status = false
-        val connectivityManager = context.getSystemService<ConnectivityManager>()
-        val request = NetworkRequest.Builder().build()
-        connectivityManager?.registerNetworkCallback(
-            request, object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) {
-                    status = true
-                }
+        override fun onUnavailable() {
+            availableNetworks.postValue(false)
+        }
 
-                override fun onUnavailable() {
-                    status = false
-                }
-
-                override fun onLost(network: Network) {
-                    status = false
-                }
-            }
-        )
+        override fun onLost(network: Network) {
+            availableNetworks.postValue(false)
+        }
     }
 
-    override fun isOnline(): Boolean = status
+    init {
+        connectivityManager.registerNetworkCallback(request, callback)
+    }
 }

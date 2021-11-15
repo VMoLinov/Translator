@@ -2,34 +2,47 @@ package mvs.translator.view.base
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.Toast
 import mvs.translator.R
 import mvs.translator.databinding.LoadingLayoutBinding
 import mvs.translator.model.AppState
 import mvs.translator.model.DataModel
-import mvs.translator.utils.network.INetworkStatus
 import mvs.translator.utils.network.NetworkStatus
+import mvs.translator.utils.network.OnlineRepository
 import mvs.translator.view.descriptionscreen.DescriptionActivity
 import mvs.translator.viewmodel.BaseViewModel
 import mvs.translator.viewmodel.Interactor
+import org.koin.androidx.scope.ScopeActivity
 
-abstract class BaseActivity<T : AppState, I : Interactor<T>> :
-    AppCompatActivity() {
+abstract class BaseActivity<T : AppState, I : Interactor<T>> : ScopeActivity() {
 
     private lateinit var binding: LoadingLayoutBinding
     abstract val viewModel: BaseViewModel<T>
-    lateinit var network: INetworkStatus
+    lateinit var network: OnlineRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = LoadingLayoutBinding.inflate(layoutInflater)
         viewModel._mutableLiveData.observe(this) { renderData(it) }
         network = NetworkStatus(applicationContext)
+        subscribeToNetworkChange()
+    }
+
+    private fun subscribeToNetworkChange() {
+        network.availableNetworks.observe(this, {
+            if (!it) {
+                Toast.makeText(
+                    this@BaseActivity,
+                    R.string.dialog_message_device_is_offline,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        })
     }
 
     override fun onResume() {
         super.onResume()
-        if (!network.isOnline() && isDialogNull()) {
+        if (network.availableNetworks.value == false && isDialogNull()) {
             showNoInternetConnectionDialog()
         }
     }
