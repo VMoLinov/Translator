@@ -6,10 +6,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import mvs.translator.databinding.AcMainRecyclerviewItemBinding
+import mvs.translator.model.DataModel
 
 class MainAdapter(
     private var onListItemClickListener: OnListItemClickListener
-) : ListAdapter<mvs.translator.model.DataModel, MainAdapter.MainViewHolder>(MainCallback) {
+) : ListAdapter<DataModel, MainAdapter.MainViewHolder>(MainCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         return MainViewHolder(parent)
@@ -23,7 +24,7 @@ class MainAdapter(
         AcMainRecyclerviewItemBinding.inflate(parent.inflater(), parent, false).root
     ) {
 
-        fun bind(data: mvs.translator.model.DataModel) {
+        fun bind(data: DataModel) {
             val binder = AcMainRecyclerviewItemBinding.bind(itemView)
             binder.headerTextviewRecyclerItem.text = data.text
             binder.descriptionTextviewRecyclerItem.text =
@@ -34,27 +35,27 @@ class MainAdapter(
 
     private fun ViewGroup.inflater() = LayoutInflater.from(context)
 
-    private fun openInNewWindow(listItemData: mvs.translator.model.DataModel) {
+    private fun openInNewWindow(listItemData: DataModel) {
         onListItemClickListener.onItemClick(listItemData)
     }
 
     interface OnListItemClickListener {
-        fun onItemClick(data: mvs.translator.model.DataModel)
+        fun onItemClick(data: DataModel)
     }
 }
 
-object MainCallback : DiffUtil.ItemCallback<mvs.translator.model.DataModel>() {
+object MainCallback : DiffUtil.ItemCallback<DataModel>() {
 
     override fun areItemsTheSame(
-        oldItem: mvs.translator.model.DataModel,
-        newItem: mvs.translator.model.DataModel
+        oldItem: DataModel,
+        newItem: DataModel
     ): Boolean {
         return oldItem == newItem
     }
 
     override fun areContentsTheSame(
-        oldItem: mvs.translator.model.DataModel,
-        newItem: mvs.translator.model.DataModel
+        oldItem: DataModel,
+        newItem: DataModel
     ): Boolean {
         return oldItem.meanings == newItem.meanings && oldItem.text == newItem.text
     }

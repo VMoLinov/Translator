@@ -7,11 +7,14 @@ import android.view.MenuItem
 import android.view.View
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import mvs.translator.R
 import mvs.translator.databinding.AcMainBinding
 import mvs.translator.model.AppState
 import mvs.translator.model.DataModel
 import mvs.translator.view.base.BaseActivity
+import mvs.translator.view.descriptionscreen.DescriptionActivity
 import mvs.translator.view.history.HistoryActivity
 import mvs.translator.view.main.search.LocalSearchDialogFragment
 import mvs.translator.view.main.search.OnSearchClickListener
@@ -38,7 +41,9 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
         object : OnSearchClickListener {
             override fun onClick(searchWord: String) {
                 if (network.availableNetworks.value == true) {
-                    viewModel.getData(searchWord, true)
+                    coroutineScope.launch {
+                        viewModel.getData(searchWord, true)
+                    }
                 } else {
                     showNoInternetConnectionDialog()
                 }
@@ -88,6 +93,17 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun renderData(appState: AppState) {
+        if (appState is AppState.Simple) {
+            showViewWorking()
+            startDescriptionActivity(appState.data)
+        } else super.renderData(appState)
+    }
+
+    private fun startDescriptionActivity(data: DataModel?) {
+        data?.let { startActivity(DescriptionActivity.getIntent(this, it.text)) }
     }
 
     companion object {

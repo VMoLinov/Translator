@@ -9,6 +9,9 @@ import mvs.translator.data.remote.RepositoryImplementation
 import mvs.translator.data.remote.RetrofitImplementation
 import mvs.translator.model.DataModel
 import mvs.translator.model.room.HistoryDataBase
+import mvs.translator.view.descriptionscreen.DescriptionActivity
+import mvs.translator.view.descriptionscreen.DescriptionInteractor
+import mvs.translator.view.descriptionscreen.DescriptionViewModel
 import mvs.translator.view.history.HistoryActivity
 import mvs.translator.view.history.HistoryInteractor
 import mvs.translator.view.history.HistoryViewModel
@@ -41,5 +44,12 @@ val historyScreen = module {
     scope(named<HistoryActivity>()) {
         scoped { HistoryInteractor(get(), get()) }
         viewModel { HistoryViewModel(get()) }
+    }
+}
+
+val descriptionScreen = module {
+    scope(named<DescriptionActivity>()) {
+        scoped { DescriptionInteractor(get(), get()) }
+        viewModel { DescriptionViewModel(get()) }
     }
 }

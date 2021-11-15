@@ -1,15 +1,15 @@
 package mvs.translator.view.history
 
 import android.os.Bundle
+import kotlinx.coroutines.launch
 import mvs.translator.databinding.ActivityHistoryBinding
 import mvs.translator.model.AppState
 import mvs.translator.view.base.BaseActivity
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HistoryActivity : BaseActivity<AppState, HistoryInteractor>() {
 
     private lateinit var binding: ActivityHistoryBinding
-    override val viewModel: HistoryViewModel by viewModel()
+    override val viewModel: HistoryViewModel by scope.inject()
     private val adapter: HistoryAdapter by lazy { HistoryAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +23,9 @@ class HistoryActivity : BaseActivity<AppState, HistoryInteractor>() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.getData("", false)
+        coroutineScope.launch {
+            viewModel.getData("", false)
+        }
     }
 
     override fun setDataToAdapter(data: List<mvs.translator.model.DataModel>) {

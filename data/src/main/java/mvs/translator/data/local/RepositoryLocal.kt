@@ -1,10 +1,12 @@
 package mvs.translator.data.local
 
 import mvs.translator.data.remote.Repository
+import mvs.translator.model.AppState
+import mvs.translator.model.DataModel
 
 interface RepositoryLocal<T> : Repository<T> {
 
-    suspend fun saveToDB(appState: mvs.translator.model.AppState)
+    suspend fun saveToDB(appState: AppState)
 
-    suspend fun getSimpleWord(word: String): mvs.translator.model.DataModel
+    suspend fun getSimpleWord(word: String): DataModel
 }

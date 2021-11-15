@@ -3,13 +3,16 @@ package mvs.translator.view.base
 import android.os.Bundle
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import mvs.translator.R
 import mvs.translator.databinding.LoadingLayoutBinding
 import mvs.translator.model.AppState
 import mvs.translator.model.DataModel
+import mvs.translator.utils.AlertDialogFragment
 import mvs.translator.utils.network.NetworkStatus
 import mvs.translator.utils.network.OnlineRepository
-import mvs.translator.view.descriptionscreen.DescriptionActivity
 import mvs.translator.viewmodel.BaseViewModel
 import mvs.translator.viewmodel.Interactor
 import org.koin.androidx.scope.ScopeActivity
@@ -19,6 +22,9 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : ScopeActivity() {
     private lateinit var binding: LoadingLayoutBinding
     abstract val viewModel: BaseViewModel<T>
     lateinit var network: OnlineRepository
+    internal val coroutineScope = CoroutineScope(
+        Dispatchers.Main + SupervisorJob()
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +33,7 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : ScopeActivity() {
         network = NetworkStatus(applicationContext)
     }
 
-    fun subscribeToNetworkChange(view: View) {
+    protected fun subscribeToNetworkChange(view: View) {
         val snack = Snackbar.make(
             view,
             resources.getString(R.string.dialog_message_device_is_offline),
@@ -39,7 +45,7 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : ScopeActivity() {
         })
     }
 
-    protected fun renderData(appState: T) {
+    protected open fun renderData(appState: T) {
         when (appState) {
             is AppState.Success -> {
                 showViewWorking()
@@ -53,10 +59,6 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : ScopeActivity() {
                         setDataToAdapter(it)
                     }
                 }
-            }
-            is AppState.Simple -> {
-                showViewWorking()
-                startDescriptionActivity(appState.data)
             }
             is AppState.Loading -> {
                 showViewLoading()
@@ -76,19 +78,6 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : ScopeActivity() {
         }
     }
 
-    protected fun startDescriptionActivity(data: DataModel?) {
-        data?.let {
-            startActivity(
-                DescriptionActivity.getIntent(
-                    this,
-                    it.text,
-                    mvs.translator.utils.convertMeaningsToString(it.meanings!!),
-                    it.meanings!![0].imageUrl
-                )
-            )
-        }
-    }
-
     protected fun showNoInternetConnectionDialog() {
         showAlertDialog(
             getString(R.string.dialog_title_device_is_offline),
@@ -97,11 +86,11 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : ScopeActivity() {
     }
 
     protected fun showAlertDialog(title: String?, message: String?) {
-        mvs.translator.utils.AlertDialogFragment.newInstance(title, message)
+        AlertDialogFragment.newInstance(title, message)
             .show(supportFragmentManager, DIALOG_FRAGMENT_TAG)
     }
 
-    private fun showViewWorking() {
+    protected fun showViewWorking() {
         binding.loadingFrameLayout.visibility = View.GONE
     }
 
