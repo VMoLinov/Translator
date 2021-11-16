@@ -26,6 +26,7 @@ object Versions {
     const val koin = "3.1.2"
     const val coil = "1.2.1"
     const val room = "2.3.0"
+    const val recycle = "1.2.1"
 }
 
 object Retrofit {
@@ -43,6 +44,7 @@ object Android {
         "androidx.constraintlayout:constraintlayout:${Versions.constraintLayout}"
     const val SwipeRefreshLayout =
         "androidx.swiperefreshlayout:swiperefreshlayout:${Versions.swipeRefreshLayout}"
+    const val Recycle = "androidx.recyclerview:recyclerview:${Versions.recycle}"
 }
 
 object Kotlin {

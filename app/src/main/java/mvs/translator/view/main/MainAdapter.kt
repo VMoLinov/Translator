@@ -1,16 +1,17 @@
 package mvs.translator.view.main
 
-import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import mvs.translator.databinding.AcMainRecyclerviewItemBinding
 import mvs.translator.model.DataModel
+import mvs.translator.utils.ui.ListCallback
+import mvs.translator.utils.ui.inflater
+import mvs.translator.view.base.OnListItemClickListener
 
 class MainAdapter(
     private var onListItemClickListener: OnListItemClickListener
-) : ListAdapter<DataModel, MainAdapter.MainViewHolder>(MainCallback) {
+) : ListAdapter<DataModel, MainAdapter.MainViewHolder>(ListCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         return MainViewHolder(parent)
@@ -33,30 +34,7 @@ class MainAdapter(
         }
     }
 
-    private fun ViewGroup.inflater() = LayoutInflater.from(context)
-
-    private fun openInNewWindow(listItemData: DataModel) {
+    fun openInNewWindow(listItemData: DataModel) {
         onListItemClickListener.onItemClick(listItemData)
-    }
-
-    interface OnListItemClickListener {
-        fun onItemClick(data: DataModel)
-    }
-}
-
-object MainCallback : DiffUtil.ItemCallback<DataModel>() {
-
-    override fun areItemsTheSame(
-        oldItem: DataModel,
-        newItem: DataModel
-    ): Boolean {
-        return oldItem == newItem
-    }
-
-    override fun areContentsTheSame(
-        oldItem: DataModel,
-        newItem: DataModel
-    ): Boolean {
-        return oldItem.meanings == newItem.meanings && oldItem.text == newItem.text
     }
 }

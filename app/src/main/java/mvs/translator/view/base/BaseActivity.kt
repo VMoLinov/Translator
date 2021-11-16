@@ -13,6 +13,9 @@ import mvs.translator.model.DataModel
 import mvs.translator.utils.AlertDialogFragment
 import mvs.translator.utils.network.NetworkStatus
 import mvs.translator.utils.network.OnlineRepository
+import mvs.translator.view.descriptionscreen.DescriptionActivity
+import mvs.translator.view.history.HistoryActivity
+import mvs.translator.view.main.MainActivity
 import mvs.translator.viewmodel.BaseViewModel
 import mvs.translator.viewmodel.Interactor
 import org.koin.androidx.scope.ScopeActivity
@@ -90,6 +93,10 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : ScopeActivity() {
             .show(supportFragmentManager, DIALOG_FRAGMENT_TAG)
     }
 
+    protected fun startDescriptionActivity(data: DataModel?) {
+        data?.let { startActivity(DescriptionActivity.getIntent(this, it.text)) }
+    }
+
     protected fun showViewWorking() {
         binding.loadingFrameLayout.visibility = View.GONE
     }
@@ -103,6 +110,24 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : ScopeActivity() {
     }
 
     abstract fun setDataToAdapter(data: List<DataModel>)
+
+    override fun onResume() {
+        super.onResume()
+        supportActionBar?.title = when (this) {
+            is MainActivity -> {
+                getString(R.string.main_activity)
+            }
+            is HistoryActivity -> {
+                getString(R.string.history_activity)
+            }
+            is DescriptionActivity -> {
+                getString(R.string.description_activity)
+            }
+            else -> {
+                getString(R.string.app_name)
+            }
+        }
+    }
 
     companion object {
         private const val DIALOG_FRAGMENT_TAG = "74a54328-5d62-46bf-ab6b-cbf5d8c79522"

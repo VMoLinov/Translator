@@ -4,13 +4,21 @@ import android.os.Bundle
 import kotlinx.coroutines.launch
 import mvs.translator.databinding.ActivityHistoryBinding
 import mvs.translator.model.AppState
+import mvs.translator.model.DataModel
 import mvs.translator.view.base.BaseActivity
+import mvs.translator.view.base.OnListItemClickListener
 
 class HistoryActivity : BaseActivity<AppState, HistoryInteractor>() {
 
     private lateinit var binding: ActivityHistoryBinding
     override val viewModel: HistoryViewModel by scope.inject()
-    private val adapter: HistoryAdapter by lazy { HistoryAdapter() }
+    private val adapter: HistoryAdapter by lazy { HistoryAdapter(onListItemClickListener) }
+    private val onListItemClickListener: OnListItemClickListener =
+        object : OnListItemClickListener {
+            override fun onItemClick(data: DataModel) {
+                startDescriptionActivity(data)
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,8 +36,8 @@ class HistoryActivity : BaseActivity<AppState, HistoryInteractor>() {
         }
     }
 
-    override fun setDataToAdapter(data: List<mvs.translator.model.DataModel>) {
-        adapter.setData(data)
+    override fun setDataToAdapter(data: List<DataModel>) {
+        adapter.submitList(data)
     }
 
     private fun iniViewModel() {

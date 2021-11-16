@@ -14,6 +14,7 @@ import mvs.translator.databinding.AcMainBinding
 import mvs.translator.model.AppState
 import mvs.translator.model.DataModel
 import mvs.translator.view.base.BaseActivity
+import mvs.translator.view.base.OnListItemClickListener
 import mvs.translator.view.descriptionscreen.DescriptionActivity
 import mvs.translator.view.history.HistoryActivity
 import mvs.translator.view.main.search.LocalSearchDialogFragment
@@ -31,8 +32,8 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
             searchDialogFragment.setOnSearchClickListener(onRemoteSearchClickListener)
             searchDialogFragment.show(supportFragmentManager, REMOTE_SEARCH_FRAGMENT_DIALOG_TAG)
         }
-    private val onListItemClickListener: MainAdapter.OnListItemClickListener =
-        object : MainAdapter.OnListItemClickListener {
+    private val onListItemClickListener: OnListItemClickListener =
+        object : OnListItemClickListener {
             override fun onItemClick(data: DataModel) {
                 startDescriptionActivity(data)
             }
@@ -100,10 +101,6 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
             showViewWorking()
             startDescriptionActivity(appState.data)
         } else super.renderData(appState)
-    }
-
-    private fun startDescriptionActivity(data: DataModel?) {
-        data?.let { startActivity(DescriptionActivity.getIntent(this, it.text)) }
     }
 
     companion object {

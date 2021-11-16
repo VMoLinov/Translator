@@ -12,4 +12,7 @@
     <string name="menu_title_history">History</string>
     <string name="dialog_local_search_message">Поиск из памяти устройства</string>
     <string name="ok">поиск</string>
+    <string name="main_activity">Главная</string>
+    <string name="history_activity">История</string>
+    <string name="description_activity">Описание</string>
 </resources>
