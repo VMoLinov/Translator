@@ -5,35 +5,50 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import mvs.translator.R
 import mvs.translator.databinding.ActivityDescriptionBinding
-import mvs.translator.utils.network.INetworkStatus
-import mvs.translator.utils.network.NetworkStatus
+import mvs.translator.model.AppState
+import mvs.translator.model.DataModel
+import mvs.translator.utils.AlertDialogFragment
+import mvs.translator.utils.convertMeaningsToString
+import mvs.translator.view.base.BaseActivity
 
-class DescriptionActivity : AppCompatActivity() {
+class DescriptionActivity : BaseActivity<AppState, DescriptionInteractor>() {
 
     private lateinit var binding: ActivityDescriptionBinding
-    private lateinit var network: INetworkStatus
-    private val coroutineScope = CoroutineScope(
-        Dispatchers.Main + SupervisorJob()
-    )
+    override val viewModel: DescriptionViewModel by scope.inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        network = NetworkStatus(applicationContext)
         binding = ActivityDescriptionBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setActionbarHomeButtonAsUp()
         binding.descriptionScreenSwipeRefreshLayout.setOnRefreshListener { startLoadingOrShowError() }
-        setData()
+        subscribeToNetworkChange(binding.descriptionScreenSwipeRefreshLayout)
+        viewModel._mutableLiveData.observe(this, { renderData(it) })
+        coroutineScope.launch {
+            val bundle = intent.extras
+            viewModel.getData(bundle?.getString(WORD_EXTRA).toString(), true)
+        }
+    }
+
+    override fun renderData(appState: AppState) {
+        if (appState is AppState.Simple) {
+            val data = appState.data
+            binding.descriptionHeader.text = data?.text
+            binding.descriptionTextview.text = convertMeaningsToString(data?.meanings!!)
+            val imageLink = data.meanings!![0].imageUrl
+            if (imageLink.isBlank()) {
+                stopRefreshAnimationIfNeeded()
+            } else {
+                useCoilToLoadPhoto(binding.descriptionImageview, imageLink)
+                stopRefreshAnimationIfNeeded()
+            }
+        } else super.renderData(appState)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -51,23 +66,13 @@ class DescriptionActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    private fun setData() {
-        val bundle = intent.extras
-        binding.descriptionHeader.text = bundle?.getString(WORD_EXTRA)
-        binding.descriptionTextview.text = bundle?.getString(DESCRIPTION_EXTRA)
-        val imageLink = bundle?.getString(URL_EXTRA)
-        if (imageLink.isNullOrBlank()) {
-            stopRefreshAnimationIfNeeded()
-        } else {
-            useCoilToLoadPhoto(binding.descriptionImageview, imageLink)
-        }
-    }
-
     private fun startLoadingOrShowError() {
-        if (network.isOnline()) {
-            setData()
+        if (network.availableNetworks.value == true) {
+            coroutineScope.launch {
+                viewModel.getData(binding.descriptionHeader.text.toString(), true)
+            }
         } else {
-            mvs.translator.utils.AlertDialogFragment.newInstance(
+            AlertDialogFragment.newInstance(
                 getString(R.string.dialog_title_device_is_offline),
                 getString(R.string.dialog_message_device_is_offline)
             ).show(
@@ -105,22 +110,17 @@ class DescriptionActivity : AppCompatActivity() {
         }
     }
 
-    companion object {
 
+    companion object {
         private const val DIALOG_FRAGMENT_TAG = "8c7dff51-9769-4f6d-bbee-a3896085e76e"
         private const val WORD_EXTRA = "f76a288a-5dcc-43f1-ba89-7fe1d53f63b0"
-        private const val DESCRIPTION_EXTRA = "0eeb92aa-520b-4fd1-bb4b-027fbf963d9a"
-        private const val URL_EXTRA = "6e4b154d-e01f-4953-a404-639fb3bf7281"
-
         fun getIntent(
             context: Context,
             word: String,
-            description: String,
-            url: String?
         ): Intent = Intent(context, DescriptionActivity::class.java).apply {
             putExtra(WORD_EXTRA, word)
-            putExtra(DESCRIPTION_EXTRA, description)
-            putExtra(URL_EXTRA, url)
         }
     }
+
+    override fun setDataToAdapter(data: List<DataModel>) {}
 }

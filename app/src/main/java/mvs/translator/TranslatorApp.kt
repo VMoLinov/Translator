@@ -2,6 +2,7 @@ package mvs.translator
 
 import android.app.Application
 import mvs.translator.koin.application
+import mvs.translator.koin.descriptionScreen
 import mvs.translator.koin.historyScreen
 import mvs.translator.koin.mainScreen
 import org.koin.android.ext.koin.androidContext
@@ -13,7 +14,7 @@ class TranslatorApp : Application() {
         super.onCreate()
         startKoin {
             androidContext(applicationContext)
-            modules(listOf(application, mainScreen, historyScreen))
+            modules(listOf(application, mainScreen, historyScreen, descriptionScreen))
         }
     }
 }

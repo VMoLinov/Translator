@@ -1,48 +1,40 @@
 package mvs.translator.view.history
 
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import mvs.translator.R
+import mvs.translator.databinding.ActivityHistoryRecyclerviewItemBinding
+import mvs.translator.model.DataModel
+import mvs.translator.utils.ui.ListCallback
+import mvs.translator.utils.ui.inflater
+import mvs.translator.view.base.OnListItemClickListener
 
-class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.RecyclerItemViewHolder>() {
+class HistoryAdapter(
+    private val onListItemClickListener: OnListItemClickListener
+) : ListAdapter<DataModel, HistoryAdapter.HistoryViewHolder>(ListCallback) {
 
-    private var data: List<mvs.translator.model.DataModel> = arrayListOf()
-
-    fun setData(data: List<mvs.translator.model.DataModel>) {
-        this.data = data
-        notifyDataSetChanged()
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {
+        return HistoryViewHolder(parent)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerItemViewHolder {
-        return RecyclerItemViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.activity_history_recyclerview_item, parent, false) as View
-        )
+    override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
+        holder.bind(currentList[position])
     }
 
-    override fun onBindViewHolder(holder: RecyclerItemViewHolder, position: Int) {
-        holder.bind(data[position])
-    }
+    inner class HistoryViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+        ActivityHistoryRecyclerviewItemBinding.inflate(parent.inflater(), parent, false).root
+    ) {
 
-    override fun getItemCount(): Int {
-        return data.size
-    }
-
-    inner class RecyclerItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
-        fun bind(data: mvs.translator.model.DataModel) {
-            if (layoutPosition != RecyclerView.NO_POSITION) {
-                itemView.findViewById<TextView>(R.id.header_history_textview_recycler_item).text =
-                    data.text
-                itemView.setOnClickListener {
-                    Toast.makeText(itemView.context, "on click: ${data.text}", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
+        fun bind(data: DataModel) {
+            val binder = ActivityHistoryRecyclerviewItemBinding.bind(itemView)
+            binder.headerHistoryTextviewRecyclerItem.text = data.text
+//            binder.descriptionTextviewRecyclerItem.text =
+//                data.meanings?.joinToString { it.translation?.translation.toString() }
+            binder.root.setOnClickListener { openInNewWindow(data) }
         }
+    }
+
+    fun openInNewWindow(listItemData: DataModel) {
+        onListItemClickListener.onItemClick(listItemData)
     }
 }

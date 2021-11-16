@@ -7,38 +7,44 @@ import android.view.MenuItem
 import android.view.View
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import mvs.translator.R
 import mvs.translator.databinding.AcMainBinding
 import mvs.translator.model.AppState
+import mvs.translator.model.DataModel
 import mvs.translator.view.base.BaseActivity
+import mvs.translator.view.base.OnListItemClickListener
+import mvs.translator.view.descriptionscreen.DescriptionActivity
 import mvs.translator.view.history.HistoryActivity
 import mvs.translator.view.main.search.LocalSearchDialogFragment
 import mvs.translator.view.main.search.OnSearchClickListener
 import mvs.translator.view.main.search.RemoteSearchDialogFragment
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity<AppState, MainInteractor>() {
 
     private lateinit var binding: AcMainBinding
     private val adapter: MainAdapter by lazy { MainAdapter(onListItemClickListener) }
-    override val viewModel: MainViewModel by viewModel()
+    override val viewModel: MainViewModel by scope.inject()
     private val fabClickListener: View.OnClickListener =
         View.OnClickListener {
             val searchDialogFragment = RemoteSearchDialogFragment.newInstance()
             searchDialogFragment.setOnSearchClickListener(onRemoteSearchClickListener)
             searchDialogFragment.show(supportFragmentManager, REMOTE_SEARCH_FRAGMENT_DIALOG_TAG)
         }
-    private val onListItemClickListener: MainAdapter.OnListItemClickListener =
-        object : MainAdapter.OnListItemClickListener {
-            override fun onItemClick(data: mvs.translator.model.DataModel) {
+    private val onListItemClickListener: OnListItemClickListener =
+        object : OnListItemClickListener {
+            override fun onItemClick(data: DataModel) {
                 startDescriptionActivity(data)
             }
         }
     private val onRemoteSearchClickListener: OnSearchClickListener =
         object : OnSearchClickListener {
             override fun onClick(searchWord: String) {
-                if (network.isOnline()) {
-                    viewModel.getData(searchWord, true)
+                if (network.availableNetworks.value == true) {
+                    coroutineScope.launch {
+                        viewModel.getData(searchWord, true)
+                    }
                 } else {
                     showNoInternetConnectionDialog()
                 }
@@ -62,9 +68,10 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
             DividerItemDecoration(applicationContext, LinearLayoutManager.VERTICAL)
         )
         binding.mainActivityRecyclerview.adapter = adapter
+        subscribeToNetworkChange(binding.mainContainer)
     }
 
-    override fun setDataToAdapter(data: List<mvs.translator.model.DataModel>) {
+    override fun setDataToAdapter(data: List<DataModel>) {
         adapter.submitList(data)
     }
 
@@ -87,6 +94,13 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun renderData(appState: AppState) {
+        if (appState is AppState.Simple) {
+            showViewWorking()
+            startDescriptionActivity(appState.data)
+        } else super.renderData(appState)
     }
 
     companion object {

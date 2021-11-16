@@ -3,8 +3,9 @@ package mvs.translator.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
+import mvs.translator.model.AppState
 
-abstract class BaseViewModel<T : mvs.translator.model.AppState>(
+abstract class BaseViewModel<T : AppState>(
     open val _mutableLiveData: MutableLiveData<T> = MutableLiveData()
 ) : ViewModel() {
 
@@ -25,7 +26,7 @@ abstract class BaseViewModel<T : mvs.translator.model.AppState>(
         viewModelCoroutineScope.coroutineContext.cancelChildren()
     }
 
-    abstract fun getData(word: String, isOnline: Boolean)
+    abstract suspend fun getData(word: String, isOnline: Boolean)
 
     abstract fun handleError(error: Throwable)
 }

@@ -2,23 +2,32 @@ package mvs.translator.view.base
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import mvs.translator.R
 import mvs.translator.databinding.LoadingLayoutBinding
 import mvs.translator.model.AppState
 import mvs.translator.model.DataModel
-import mvs.translator.utils.network.INetworkStatus
+import mvs.translator.utils.AlertDialogFragment
 import mvs.translator.utils.network.NetworkStatus
+import mvs.translator.utils.network.OnlineRepository
 import mvs.translator.view.descriptionscreen.DescriptionActivity
+import mvs.translator.view.history.HistoryActivity
+import mvs.translator.view.main.MainActivity
 import mvs.translator.viewmodel.BaseViewModel
 import mvs.translator.viewmodel.Interactor
+import org.koin.androidx.scope.ScopeActivity
 
-abstract class BaseActivity<T : AppState, I : Interactor<T>> :
-    AppCompatActivity() {
+abstract class BaseActivity<T : AppState, I : Interactor<T>> : ScopeActivity() {
 
     private lateinit var binding: LoadingLayoutBinding
     abstract val viewModel: BaseViewModel<T>
-    lateinit var network: INetworkStatus
+    lateinit var network: OnlineRepository
+    internal val coroutineScope = CoroutineScope(
+        Dispatchers.Main + SupervisorJob()
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,14 +36,19 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> :
         network = NetworkStatus(applicationContext)
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (!network.isOnline() && isDialogNull()) {
-            showNoInternetConnectionDialog()
-        }
+    protected fun subscribeToNetworkChange(view: View) {
+        val snack = Snackbar.make(
+            view,
+            resources.getString(R.string.dialog_message_device_is_offline),
+            Snackbar.LENGTH_INDEFINITE
+        )
+        network.availableNetworks.observe(this, {
+            if (it == false) snack.show()
+            else snack.dismiss()
+        })
     }
 
-    protected fun renderData(appState: T) {
+    protected open fun renderData(appState: T) {
         when (appState) {
             is AppState.Success -> {
                 showViewWorking()
@@ -48,10 +62,6 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> :
                         setDataToAdapter(it)
                     }
                 }
-            }
-            is AppState.Simple -> {
-                showViewWorking()
-                startDescriptionActivity(appState.data)
             }
             is AppState.Loading -> {
                 showViewLoading()
@@ -71,19 +81,6 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> :
         }
     }
 
-    protected fun startDescriptionActivity(data: DataModel?) {
-        data?.let {
-            startActivity(
-                DescriptionActivity.getIntent(
-                    this,
-                    it.text,
-                    mvs.translator.utils.convertMeaningsToString(it.meanings!!),
-                    it.meanings!![0].imageUrl
-                )
-            )
-        }
-    }
-
     protected fun showNoInternetConnectionDialog() {
         showAlertDialog(
             getString(R.string.dialog_title_device_is_offline),
@@ -92,11 +89,15 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> :
     }
 
     protected fun showAlertDialog(title: String?, message: String?) {
-        mvs.translator.utils.AlertDialogFragment.newInstance(title, message)
+        AlertDialogFragment.newInstance(title, message)
             .show(supportFragmentManager, DIALOG_FRAGMENT_TAG)
     }
 
-    private fun showViewWorking() {
+    protected fun startDescriptionActivity(data: DataModel?) {
+        data?.let { startActivity(DescriptionActivity.getIntent(this, it.text)) }
+    }
+
+    protected fun showViewWorking() {
         binding.loadingFrameLayout.visibility = View.GONE
     }
 
@@ -109,6 +110,24 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> :
     }
 
     abstract fun setDataToAdapter(data: List<DataModel>)
+
+    override fun onResume() {
+        super.onResume()
+        supportActionBar?.title = when (this) {
+            is MainActivity -> {
+                getString(R.string.main_activity)
+            }
+            is HistoryActivity -> {
+                getString(R.string.history_activity)
+            }
+            is DescriptionActivity -> {
+                getString(R.string.description_activity)
+            }
+            else -> {
+                getString(R.string.app_name)
+            }
+        }
+    }
 
     companion object {
         private const val DIALOG_FRAGMENT_TAG = "74a54328-5d62-46bf-ab6b-cbf5d8c79522"
