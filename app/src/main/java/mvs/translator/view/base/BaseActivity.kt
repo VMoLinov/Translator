@@ -1,7 +1,12 @@
 package mvs.translator.view.base
 
+import android.animation.ObjectAnimator
+import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AccelerateInterpolator
+import androidx.annotation.RequiresApi
+import androidx.core.animation.doOnEnd
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,9 +36,28 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : ScopeActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            setSplashScreen()
+        }
         binding = LoadingLayoutBinding.inflate(layoutInflater)
         viewModel._mutableLiveData.observe(this) { renderData(it) }
         network = NetworkStatus(applicationContext)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun setSplashScreen() {
+        splashScreen.setOnExitAnimationListener { splashScreenView ->
+            val slide = ObjectAnimator.ofFloat(
+                splashScreenView,
+                View.TRANSLATION_X,
+                0f,
+                splashScreenView.width.toFloat()
+            )
+            slide.interpolator = AccelerateInterpolator()
+            slide.duration = 1000L
+            slide.doOnEnd { splashScreenView.remove() }
+            slide.start()
+        }
     }
 
     protected fun subscribeToNetworkChange(view: View) {

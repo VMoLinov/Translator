@@ -1,13 +1,18 @@
 package mvs.translator.view.main
 
+import android.animation.ObjectAnimator
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewTreeObserver
+import android.view.animation.AccelerateInterpolator
+import androidx.annotation.RequiresApi
+import androidx.core.animation.doOnEnd
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import mvs.translator.R
 import mvs.translator.databinding.AcMainBinding
@@ -15,7 +20,6 @@ import mvs.translator.model.AppState
 import mvs.translator.model.DataModel
 import mvs.translator.view.base.BaseActivity
 import mvs.translator.view.base.OnListItemClickListener
-import mvs.translator.view.descriptionscreen.DescriptionActivity
 import mvs.translator.view.history.HistoryActivity
 import mvs.translator.view.main.search.LocalSearchDialogFragment
 import mvs.translator.view.main.search.OnSearchClickListener
