@@ -1,16 +1,15 @@
 package mvs.translator.view.main
 
-import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver
-import android.view.animation.AccelerateInterpolator
 import androidx.annotation.RequiresApi
-import androidx.core.animation.doOnEnd
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
@@ -24,6 +23,8 @@ import mvs.translator.view.history.HistoryActivity
 import mvs.translator.view.main.search.LocalSearchDialogFragment
 import mvs.translator.view.main.search.OnSearchClickListener
 import mvs.translator.view.main.search.RemoteSearchDialogFragment
+import java.time.Duration
+import java.time.Instant
 
 class MainActivity : BaseActivity<AppState, MainInteractor>() {
 
@@ -64,6 +65,7 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setSplashScreen()
         binding = AcMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.searchFab.setOnClickListener(fabClickListener)
@@ -73,6 +75,29 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
         )
         binding.mainActivityRecyclerview.adapter = adapter
         subscribeToNetworkChange(binding.mainContainer)
+    }
+
+    private fun setSplashScreen() {
+        var isHideSplashScreen = false
+        object : CountDownTimer(1000, 500) {
+            override fun onTick(millisUntilFinished: Long) {}
+            override fun onFinish() {
+                isHideSplashScreen = true
+            }
+        }.start()
+        val content: View = findViewById(android.R.id.content)
+        content.viewTreeObserver.addOnPreDrawListener(
+            object : ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    return if (isHideSplashScreen) {
+                        content.viewTreeObserver.removeOnPreDrawListener(this)
+                        true
+                    } else {
+                        false
+                    }
+                }
+            }
+        )
     }
 
     override fun setDataToAdapter(data: List<DataModel>) {
