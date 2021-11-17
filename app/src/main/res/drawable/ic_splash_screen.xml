@@ -57,7 +57,7 @@
                     android:strokeWidth="1" />
             </group>
             <group
-                android:name="a"
+                android:name="char"
                 android:pivotX="32"
                 android:pivotY="32"
                 android:scaleX="0.5"

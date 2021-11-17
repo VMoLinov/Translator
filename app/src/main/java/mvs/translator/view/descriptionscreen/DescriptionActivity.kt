@@ -2,12 +2,20 @@ package mvs.translator.view.descriptionscreen
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.RenderEffect
+import android.graphics.Shader
+import android.os.Build
 import android.os.Bundle
+import android.view.Gravity
 import android.view.MenuItem
+import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
+import androidx.annotation.RequiresApi
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
+import com.google.android.material.checkbox.MaterialCheckBox
 import kotlinx.coroutines.launch
 import mvs.translator.R
 import mvs.translator.databinding.ActivityDescriptionBinding
@@ -34,6 +42,31 @@ class DescriptionActivity : BaseActivity<AppState, DescriptionInteractor>() {
             val bundle = intent.extras
             viewModel.getData(bundle?.getString(WORD_EXTRA).toString(), true)
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            setBlurCheckBox(binding.descriptionImageview)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun setBlurCheckBox(imageView: ImageView) {
+        val button = MaterialCheckBox(this)
+        val params = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        params.gravity = Gravity.CENTER
+        button.layoutParams = params
+        button.text = getString(R.string.button_blur)
+        val blurEffect =
+            RenderEffect.createBlurEffect(16f, 16f, Shader.TileMode.DECAL)
+        button.setOnCheckedChangeListener { _, checked ->
+            if (checked) {
+                imageView.setRenderEffect(blurEffect)
+            } else {
+                imageView.setRenderEffect(null)
+            }
+        }
+        binding.linearLayout.addView(button)
     }
 
     override fun renderData(appState: AppState) {
@@ -94,22 +127,15 @@ class DescriptionActivity : BaseActivity<AppState, DescriptionInteractor>() {
             .data("https:$imageLink")
             .target(
                 onStart = {},
-                onSuccess = { result ->
-                    imageView.setImageDrawable(result)
-                },
-                onError = {
-                    imageView.setImageResource(R.drawable.ic_load_error_vector)
-                }
+                onSuccess = { result -> imageView.setImageDrawable(result) },
+                onError = { imageView.setImageResource(R.drawable.ic_load_error_vector) }
             )
-            .transformations(
-                CircleCropTransformation(),
-            )
+            .transformations(CircleCropTransformation())
             .build()
         coroutineScope.launch {
             ImageLoader(this@DescriptionActivity).enqueue(request)
         }
     }
-
 
     companion object {
         private const val DIALOG_FRAGMENT_TAG = "8c7dff51-9769-4f6d-bbee-a3896085e76e"

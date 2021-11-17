@@ -15,4 +15,5 @@
     <string name="main_activity">Главная</string>
     <string name="history_activity">История</string>
     <string name="description_activity">Описание</string>
+    <string name="button_blur">blur</string>
 </resources>
