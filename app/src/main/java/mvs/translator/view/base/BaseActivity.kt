@@ -1,7 +1,12 @@
 package mvs.translator.view.base
 
+import android.animation.ObjectAnimator
+import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AccelerateInterpolator
+import androidx.annotation.RequiresApi
+import androidx.core.animation.doOnEnd
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
